@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/articles";
 export function ArticleCard({ article }: { article: Article }) {
   return (
     <Link
-      href={`/articles/${article.slug}`}
+      href={`/articles/${encodeURIComponent(article.slug)}`}
       className="group block overflow-hidden rounded-xl border border-border bg-surface transition-shadow hover:shadow-lg"
     >
       <div className="relative aspect-[16/9] overflow-hidden bg-accent-light">

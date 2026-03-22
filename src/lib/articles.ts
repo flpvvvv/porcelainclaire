@@ -17,6 +17,15 @@ export interface Article {
 
 const ARTICLES_PER_PAGE = 12;
 
+/** Dynamic route params may arrive percent-encoded; DB slugs are stored decoded (UTF-8). */
+function normalizeArticleSlugParam(slug: string): string {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
 export async function getArticles(page = 1): Promise<{
   articles: Article[];
   total: number;
@@ -49,10 +58,11 @@ export async function getArticles(page = 1): Promise<{
 export async function getArticleBySlug(
   slug: string,
 ): Promise<Article | null> {
+  const normalized = normalizeArticleSlugParam(slug);
   const { data, error } = await supabase
     .from("articles")
     .select("*")
-    .eq("slug", slug)
+    .eq("slug", normalized)
     .single();
 
   if (error) {
