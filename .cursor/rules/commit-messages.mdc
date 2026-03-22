@@ -1,0 +1,39 @@
+---
+description: Format and conventions for git commit messages (generate / review commits)
+alwaysApply: false
+---
+
+# Commit messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/). One logical change per commit when possible.
+
+## Subject line (required)
+
+- Pattern: `type(optional-scope): imperative description`
+- **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`
+- **Scopes** (use when helpful): `web`, `sync`, `ci`, `deps`, `content`
+- Imperative mood (“add”, “fix”, not “added”, “fixes”)
+- Lowercase after the colon; no trailing period; aim for ~50 characters (hard cap ~72)
+- **Breaking changes**: add `!` after type/scope, e.g. `feat(api)!: remove legacy endpoint`, or document in body/footer
+
+## Body (optional)
+
+- Blank line after subject; explain **why** and non-obvious **what**; wrap at ~72 characters
+- Reference issues: `Fixes #123` or `Refs #123` in footer when relevant
+
+## Examples
+
+```
+feat(articles): add slug-based article page
+
+fix(sync): retry transient network errors on fetch
+
+chore(deps): bump next to 16.2.1
+
+ci: add lint-staged and husky pre-commit
+```
+
+## Do not
+
+- Vague subjects (“update”, “fixes”, “wip”)
+- Mix unrelated changes in one commit without a clear umbrella scope and body

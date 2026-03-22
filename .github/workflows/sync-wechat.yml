@@ -1,0 +1,57 @@
+name: Sync WeChat Articles
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+    inputs:
+      article_url:
+        description: "WeChat article URL to import (leave empty for RSS sync)"
+        required: false
+        type: string
+      tags:
+        description: "Comma-separated tags for the article"
+        required: false
+        type: string
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET }}
+  SITE_URL: https://porcelainclaire.com
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        working-directory: sync
+        run: uv sync
+
+      - name: Import single article
+        if: ${{ github.event.inputs.article_url != '' }}
+        working-directory: sync
+        run: |
+          uv run sync article "${{ github.event.inputs.article_url }}" \
+            --tags "${{ github.event.inputs.tags || '' }}"
+
+      - name: Sync from RSS feed
+        if: ${{ github.event.inputs.article_url == '' }}
+        working-directory: sync
+        run: |
+          if [ -n "$RSS_FEED_URL" ]; then
+            uv run sync rss "$RSS_FEED_URL"
+          else
+            echo "RSS_FEED_URL not configured, skipping RSS sync."
+            echo "Use workflow_dispatch with article_url to import individual articles."
+          fi
+        env:
+          RSS_FEED_URL: ${{ secrets.RSS_FEED_URL }}
