@@ -1,16 +1,15 @@
 name: Sync WeChat Articles
 
 on:
-  schedule:
-    - cron: "0 8 * * *"
   workflow_dispatch:
     inputs:
-      article_url:
-        description: "WeChat article URL to import (leave empty for RSS sync)"
-        required: false
+      article_urls:
+        description: >-
+          One or more WeChat article URLs — one per line, or comma-separated.
+        required: true
         type: string
       tags:
-        description: "Comma-separated tags for the article"
+        description: "Comma-separated tags applied to every imported article"
         required: false
         type: string
 
@@ -36,22 +35,28 @@ jobs:
         working-directory: sync
         run: uv sync
 
-      - name: Import single article
-        if: ${{ github.event.inputs.article_url != '' }}
+      - name: Import article(s)
         working-directory: sync
-        run: |
-          uv run sync article "${{ github.event.inputs.article_url }}" \
-            --tags "${{ github.event.inputs.tags || '' }}"
-
-      - name: Sync from RSS feed
-        if: ${{ github.event.inputs.article_url == '' }}
-        working-directory: sync
-        run: |
-          if [ -n "$RSS_FEED_URL" ]; then
-            uv run sync rss "$RSS_FEED_URL"
-          else
-            echo "RSS_FEED_URL not configured, skipping RSS sync."
-            echo "Use workflow_dispatch with article_url to import individual articles."
-          fi
         env:
-          RSS_FEED_URL: ${{ secrets.RSS_FEED_URL }}
+          ARTICLE_URLS: ${{ github.event.inputs.article_urls }}
+          TAGS: ${{ github.event.inputs.tags }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ARTICLE_URLS//[$' \t\r\n']/}" ]; then
+            echo "article_urls is empty."
+            exit 1
+          fi
+          TAGS_ARG=()
+          if [ -n "${TAGS:-}" ]; then
+            TAGS_ARG=(--tags "$TAGS")
+          fi
+          count=0
+          while IFS= read -r raw || [ -n "$raw" ]; do
+            url="${raw#"${raw%%[![:space:]]*}"}"
+            url="${url%"${url##*[![:space:]]}"}"
+            [ -z "$url" ] && continue
+            count=$((count + 1))
+            echo "=== Importing ($count): $url ==="
+            uv run sync article "$url" "${TAGS_ARG[@]}"
+          done < <(printf '%s' "$ARTICLE_URLS" | tr ',' '\n')
+          echo "Done. Imported $count article(s)."
