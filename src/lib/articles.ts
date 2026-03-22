@@ -19,11 +19,17 @@ const ARTICLES_PER_PAGE = 12;
 
 /** Dynamic route params may arrive percent-encoded; DB slugs are stored decoded (UTF-8). */
 function normalizeArticleSlugParam(slug: string): string {
-  try {
-    return decodeURIComponent(slug);
-  } catch {
-    return slug;
+  let out = slug;
+  for (let i = 0; i < 8; i++) {
+    try {
+      const next = decodeURIComponent(out);
+      if (next === out) break;
+      out = next;
+    } catch {
+      break;
+    }
   }
+  return out;
 }
 
 export async function getArticles(page = 1): Promise<{
@@ -59,18 +65,30 @@ export async function getArticleBySlug(
   slug: string,
 ): Promise<Article | null> {
   const normalized = normalizeArticleSlugParam(slug);
-  const { data, error } = await supabase
-    .from("articles")
-    .select("*")
-    .eq("slug", normalized)
-    .single();
+  const collapsed = normalized.includes("-")
+    ? normalized.replace(/-/g, "")
+    : normalized;
 
-  if (error) {
-    if (error.code === "PGRST116") return null;
-    throw error;
+  const trySlugs =
+    collapsed === normalized
+      ? [normalized]
+      : [normalized, collapsed];
+
+  for (const candidate of trySlugs) {
+    const { data, error } = await supabase
+      .from("articles")
+      .select("*")
+      .eq("slug", candidate)
+      .maybeSingle();
+
+    if (error) {
+      if (error.code === "PGRST116") continue;
+      throw error;
+    }
+    if (data) return data;
   }
 
-  return data;
+  return null;
 }
 
 export async function getAllSlugs(): Promise<string[]> {

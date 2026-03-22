@@ -50,10 +50,11 @@ def _slugify(title: str) -> str:
         A URL-safe slug derived from the title.
     """
     slug = title.strip().lower()
-    slug = re.sub(r"[^\w\u4e00-\u9fff]+", "-", slug)
-    slug = slug.strip("-")
+    # Drop punctuation instead of using "-". Hyphens in path segments break
+    # Vercel/Next for some [slug] routes; CJK titles need no ASCII separators.
+    slug = re.sub(r"[^\w\u4e00-\u9fff]+", "", slug)
     if len(slug) > 80:
-        slug = slug[:80].rstrip("-")
+        slug = slug[:80]
     return slug or hashlib.md5(title.encode()).hexdigest()[:12]
 
 
