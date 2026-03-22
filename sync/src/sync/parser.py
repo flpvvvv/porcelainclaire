@@ -69,6 +69,26 @@ def _extract_publish_date(html: str) -> str:
     return ""
 
 
+def _normalize_author(raw: str) -> str:
+    """Collapse duplicated author text from WeChat meta markup.
+
+    WeChat often renders the author name twice in nested spans (e.g. mobile
+    layout + screen-reader), which makes BeautifulSoup ``get_text()`` return
+    strings like ``唐慧唐慧`` or ``唐慧Claire唐慧Claire``.
+    """
+    s = raw.strip()
+    if len(s) < 2:
+        return s
+    for size in range(1, len(s) // 2 + 1):
+        if len(s) % size != 0:
+            continue
+        unit = s[:size]
+        reps = len(s) // size
+        if reps >= 2 and unit * reps == s:
+            return unit
+    return s
+
+
 def _is_wechat_image(url: str) -> bool:
     """Check if a URL is a WeChat-hosted image.
 
@@ -107,7 +127,11 @@ def parse_article(html: str) -> ParsedArticle:
     author_el = soup.find("span", class_="rich_media_meta_text") or soup.find(
         "a", id="js_name"
     )
-    author = author_el.get_text(strip=True) if author_el else "Claire"
+    author = (
+        _normalize_author(author_el.get_text(strip=True))
+        if author_el
+        else "Claire"
+    )
 
     published_at = _extract_publish_date(html)
 
