@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Logo } from "@/components/Logo";
@@ -67,8 +68,14 @@ export default function AboutPage() {
               <p className="mt-3 text-sm text-foreground-secondary">
                 扫描下方二维码，关注我的微信公众号获取最新文章推送。
               </p>
-              <div className="mt-4 inline-flex h-40 w-40 items-center justify-center rounded-xl border border-border bg-white">
-                <span className="text-xs text-neutral-400">公众号二维码</span>
+              <div className="mt-4 inline-block overflow-hidden rounded-xl border border-border bg-white">
+                <Image
+                  src="/wechat-qr.png"
+                  width={160}
+                  height={160}
+                  alt="WeChat Official Account QR code for Porcelain Claire"
+                  className="block h-40 w-40 object-contain p-1.5"
+                />
               </div>
             </section>
           </div>

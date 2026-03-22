@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
@@ -46,8 +47,14 @@ export function Footer() {
             <h2 className="text-sm font-semibold text-foreground">
               关注公众号
             </h2>
-            <div className="flex h-28 w-28 items-center justify-center rounded-lg border border-border bg-white">
-              <span className="text-xs text-neutral-400">公众号二维码</span>
+            <div className="overflow-hidden rounded-lg border border-border bg-white">
+              <Image
+                src="/wechat-qr.png"
+                width={112}
+                height={112}
+                alt="WeChat Official Account QR code for Porcelain Claire"
+                className="block h-28 w-28 object-contain p-1"
+              />
             </div>
           </div>
         </div>
