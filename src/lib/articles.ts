@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { supabase } from "./supabase";
+import { estimateReadingStatsFromHtml } from "./reading";
 
 export interface Article {
   id: string;
@@ -24,13 +25,26 @@ export type ArticleMetadata = Pick<
 export type ArticleListItem = Pick<
   Article,
   "id" | "slug" | "title" | "summary" | "cover_image_url" | "published_at"
+> & {
+  readingTimeMinutes: number;
+};
+
+type ArticleListRow = Pick<
+  Article,
+  | "id"
+  | "slug"
+  | "title"
+  | "summary"
+  | "content_html"
+  | "cover_image_url"
+  | "published_at"
 >;
 
 const ARTICLES_PER_PAGE = 12;
 const ARTICLE_METADATA_COLUMNS =
   "slug,title,summary,cover_image_url,published_at";
 const ARTICLE_LIST_COLUMNS =
-  "id,slug,title,summary,cover_image_url,published_at";
+  "id,slug,title,summary,content_html,cover_image_url,published_at";
 
 /** Dynamic route params may arrive percent-encoded; DB slugs are stored decoded (UTF-8). */
 function normalizeArticleSlugParam(slug: string): string {
@@ -93,9 +107,14 @@ export async function getArticles(cursor?: string): Promise<{
   const { data, error } = await query;
   if (error) throw error;
 
-  const articles = (data ?? []) as ArticleListItem[];
-  const hasMore = articles.length > ARTICLES_PER_PAGE;
-  if (hasMore) articles.pop();
+  const rows = (data ?? []) as ArticleListRow[];
+  const hasMore = rows.length > ARTICLES_PER_PAGE;
+  if (hasMore) rows.pop();
+
+  const articles = rows.map(({ content_html, ...article }) => ({
+    ...article,
+    readingTimeMinutes: estimateReadingStatsFromHtml(content_html).minutes,
+  }));
 
   return {
     articles,

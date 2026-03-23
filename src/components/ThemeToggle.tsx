@@ -18,7 +18,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className="h-9 w-9 shrink-0 rounded-full bg-surface-muted"
+        className="h-11 w-11 shrink-0 rounded-full border border-border/70 bg-surface/80 sm:min-w-[4.25rem] sm:px-3"
         aria-label="切换主题"
         disabled
       />
@@ -30,8 +30,9 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-foreground/5"
+      className="group inline-flex h-11 w-11 shrink-0 items-center justify-center gap-0 rounded-full border border-border/70 bg-surface/85 text-foreground-secondary shadow-[var(--card-shadow)] transition-[border-color,background-color,color,transform] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground active:scale-[0.98] sm:w-auto sm:gap-1.5 sm:px-3"
       aria-label={isDark ? "切换到浅色模式" : "切换到深色模式"}
+      title={isDark ? "切换到浅色模式" : "切换到深色模式"}
     >
       <svg
         width="18"
@@ -60,6 +61,9 @@ export function ThemeToggle() {
           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
         )}
       </svg>
+      <span className="hidden text-[0.76rem] font-medium text-current sm:inline">
+        {isDark ? "浅色" : "深色"}
+      </span>
     </button>
   );
 }

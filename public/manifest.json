@@ -4,8 +4,8 @@
   "description": "Claire 的个人博客，分享生活与思考",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fafafa",
-  "theme_color": "#5170aa",
+  "background_color": "#f5efe8",
+  "theme_color": "#f5efe8",
   "lang": "zh-CN",
   "icons": [
     {

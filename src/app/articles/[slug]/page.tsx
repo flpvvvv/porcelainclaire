@@ -12,6 +12,11 @@ import {
   getAllSlugs,
   formatDate,
 } from "@/lib/articles";
+import {
+  formatCharacterCount,
+  formatReadingTime,
+  prepareArticleHtml,
+} from "@/lib/reading";
 
 export const revalidate = 86400;
 export const maxDuration = 60;
@@ -90,97 +95,161 @@ export default async function ArticlePage({
   if (!article) notFound();
 
   const cleanHtml = sanitizeHtml(article.content_html, sanitizeOptions);
+  const preparedArticle = prepareArticleHtml(cleanHtml, {
+    suppressLeadingMedia: Boolean(article.cover_image_url),
+  });
 
   return (
     <>
       <Header />
-      <main
-        id="main-content"
-        className="flex-1 pt-[3.35rem] sm:pt-14"
-      >
-        <article className="article-shell px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
-          <ReadingProgress targetId="article-reading" />
-          <div id="article-reading">
-          <Link
-            href="/"
-            className="mb-8 inline-flex items-center gap-1.5 text-sm text-foreground-tertiary transition-colors hover:text-accent"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            返回首页
-          </Link>
-
-          {article.cover_image_url && (
-            <div className="relative mb-10 aspect-[16/10] overflow-hidden rounded-lg border border-border shadow-[var(--card-shadow)] sm:aspect-[2/1] sm:rounded-xl">
-              <Image
-                src={article.cover_image_url}
-                alt={article.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 42rem"
-                className="object-cover"
-                priority
-              />
-            </div>
-          )}
-
-          <header className="mb-10 border-b border-[var(--reading-rule)] pb-8">
-            <p className="font-display text-[0.7rem] font-medium tracking-[0.2em] text-foreground-tertiary sm:text-xs">
-              阅读
-            </p>
-            <h1
-              className="font-display mt-3 text-[1.65rem] font-semibold leading-[1.2] tracking-tight text-foreground sm:text-3xl lg:text-[2rem]"
-              style={{ textWrap: "balance" } as React.CSSProperties}
-            >
-              {article.title}
-            </h1>
-            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-foreground-secondary">
-              <span className="font-medium text-foreground">{article.author}</span>
-              <span className="text-foreground-tertiary" aria-hidden="true">
-                /
-              </span>
-              <time
-                dateTime={article.published_at}
-                className="tabular-nums text-foreground-secondary"
-              >
-                {formatDate(article.published_at)}
-              </time>
-            </div>
-            {article.tags && article.tags.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {article.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-sm border border-border bg-surface-muted px-2.5 py-1 text-xs text-foreground-secondary"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </header>
-
-          <div
-            className="article-content text-foreground"
-            dangerouslySetInnerHTML={{ __html: cleanHtml }}
+      <main id="main-content" className="flex-1 pt-[5.35rem] sm:pt-28">
+        <article className="article-shell px-4 pb-24 sm:px-6 sm:pb-28 lg:px-8">
+          <ReadingProgress
+            targetId="article-reading"
+            headings={preparedArticle.headings}
+            articleTitle={article.title}
           />
 
-          <div className="mt-14 flex flex-col items-center gap-4 rounded-lg border border-border-strong/60 bg-surface p-6 text-center shadow-[var(--card-shadow)] sm:p-8">
-            <p className="text-sm text-foreground-secondary">
-              喜欢这篇文章？在微信中互动
-            </p>
-            <WeChatButton url={article.wechat_url} />
-          </div>
+          <div className="article-layout">
+            <aside className="article-sidebar">
+              <Link href="/" className="desktop-back-top mb-4">
+                返回文章首页
+              </Link>
+
+              <div className="article-outline">
+                <p className="section-kicker">阅读地图</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="reader-stat">
+                    {formatReadingTime(preparedArticle.stats.minutes)}
+                  </span>
+                  <span className="reader-stat">
+                    {formatCharacterCount(preparedArticle.stats.characterCount)}
+                  </span>
+                </div>
+
+                {preparedArticle.headings.length > 0 ? (
+                  <nav className="mt-5 space-y-1" aria-label="文章目录">
+                    {preparedArticle.headings.map((heading) => (
+                      <a
+                        key={heading.id}
+                        href={`#${heading.id}`}
+                        className="article-outline-link"
+                        data-level={heading.level}
+                      >
+                        {heading.text}
+                      </a>
+                    ))}
+                  </nav>
+                ) : (
+                  <p className="mt-5 text-sm leading-7 text-foreground-secondary">
+                    暂无目录
+                  </p>
+                )}
+              </div>
+            </aside>
+
+            <div id="article-reading" className="article-column">
+              <Link
+                href="/"
+                className="mb-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-border/75 bg-surface/80 px-4 text-sm text-foreground-secondary transition-[border-color,color,background-color] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground lg:hidden"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                返回首页
+              </Link>
+
+              <header className="article-reading-panel relative overflow-hidden px-5 pb-6 pt-5 sm:px-8 sm:pb-8 sm:pt-7">
+                <div
+                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent"
+                  aria-hidden="true"
+                />
+                <div
+                  className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full blur-3xl"
+                  style={{ backgroundColor: "var(--hero-glow)" }}
+                  aria-hidden="true"
+                />
+
+                <p className="section-kicker">慢读现场</p>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="reader-stat">{article.author}</span>
+                  <span className="reader-stat tabular-nums">
+                    {formatDate(article.published_at)}
+                  </span>
+                  <span className="reader-stat">
+                    {formatReadingTime(preparedArticle.stats.minutes)}
+                  </span>
+                  <span className="reader-stat">
+                    {formatCharacterCount(preparedArticle.stats.characterCount)}
+                  </span>
+                </div>
+
+                <h1
+                  className="font-display mt-5 text-[2rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-[2.6rem]"
+                  style={{ textWrap: "balance" } as React.CSSProperties}
+                >
+                  {article.title}
+                </h1>
+
+                {article.tags && article.tags.length > 0 && (
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {article.tags.map((tag) => (
+                      <span key={tag} className="soft-pill">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </header>
+
+              {article.cover_image_url && (
+                <div className="article-reading-panel relative mt-6 overflow-hidden rounded-[1.75rem]">
+                  <div className="relative aspect-[4/3] sm:aspect-[16/9]">
+                    <Image
+                      src={article.cover_image_url}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 44rem"
+                      className="object-cover"
+                      preload
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="article-reading-panel mt-6 px-5 py-6 sm:px-8 sm:py-8">
+                <div
+                  className="article-content"
+                  dangerouslySetInnerHTML={{ __html: preparedArticle.html }}
+                />
+              </div>
+
+              <div className="editorial-card mt-8 rounded-[1.6rem] p-5 sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="section-kicker">继续互动</p>
+                    <h2 className="font-display mt-2 text-xl font-semibold text-foreground">
+                      在微信里继续这次阅读
+                    </h2>
+                    <p className="mt-2 text-sm leading-7 text-foreground-secondary">
+                      如果你想点赞、分享、收藏或打赏，这篇文章也同步发布在微信公众号里。
+                    </p>
+                  </div>
+                  <WeChatButton url={article.wechat_url} />
+                </div>
+              </div>
+            </div>
           </div>
         </article>
       </main>

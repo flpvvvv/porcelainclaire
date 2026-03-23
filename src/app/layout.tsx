@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
@@ -27,8 +26,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f6f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#141312" },
+    { media: "(prefers-color-scheme: light)", color: "#f5efe8" },
+    { media: "(prefers-color-scheme: dark)", color: "#121110" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -40,13 +39,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html
+      lang="zh-CN"
+      suppressHydrationWarning
+      data-scroll-behavior="smooth"
+    >
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
-      <body className="min-h-dvh flex flex-col antialiased">
+      <body id="top" className="min-h-dvh flex flex-col antialiased">
         <ThemeProvider>
           <a
             href="#main-content"
@@ -57,7 +60,6 @@ export default function RootLayout({
           {children}
           <ServiceWorkerRegistration />
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   );
