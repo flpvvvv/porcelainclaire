@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
@@ -56,6 +57,7 @@ export default function RootLayout({
           {children}
           <ServiceWorkerRegistration />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
