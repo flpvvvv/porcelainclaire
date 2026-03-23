@@ -18,6 +18,7 @@ env:
   SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
   REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET }}
   SITE_URL: https://porcelainclaire.com
+  VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
 
 jobs:
   sync:
@@ -60,3 +61,9 @@ jobs:
             uv run sync article "$url" "${TAGS_ARG[@]}"
           done < <(printf '%s' "$ARTICLE_URLS" | tr ',' '\n')
           echo "Done. Imported $count article(s)."
+
+      - name: Trigger Vercel rebuild for newly imported articles
+        if: ${{ env.VERCEL_DEPLOY_HOOK != '' }}
+        run: |
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK" > /dev/null
+          echo "Triggered Vercel deploy hook."

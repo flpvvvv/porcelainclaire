@@ -6,9 +6,15 @@ import sanitizeHtml from "sanitize-html";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WeChatButton } from "@/components/WeChatButton";
-import { getArticleBySlug, getAllSlugs, formatDate } from "@/lib/articles";
+import {
+  getArticleBySlug,
+  getArticleMetadataBySlug,
+  getAllSlugs,
+  formatDate,
+} from "@/lib/articles";
 
 export const revalidate = 86400;
+export const maxDuration = 60;
 
 type Params = { slug: string };
 
@@ -27,7 +33,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getArticleMetadataBySlug(slug);
   if (!article) return {};
 
   return {

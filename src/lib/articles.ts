@@ -15,7 +15,14 @@ export interface Article {
   updated_at: string;
 }
 
+export type ArticleMetadata = Pick<
+  Article,
+  "slug" | "title" | "summary" | "cover_image_url" | "published_at"
+>;
+
 const ARTICLES_PER_PAGE = 12;
+const ARTICLE_METADATA_COLUMNS =
+  "slug,title,summary,cover_image_url,published_at";
 
 /** Dynamic route params may arrive percent-encoded; DB slugs are stored decoded (UTF-8). */
 function normalizeArticleSlugParam(slug: string): string {
@@ -30,6 +37,36 @@ function normalizeArticleSlugParam(slug: string): string {
     }
   }
   return out;
+}
+
+function getArticleSlugCandidates(slug: string): string[] {
+  const normalized = normalizeArticleSlugParam(slug);
+  const collapsed = normalized.includes("-")
+    ? normalized.replace(/-/g, "")
+    : normalized;
+
+  return collapsed === normalized ? [normalized] : [normalized, collapsed];
+}
+
+async function queryArticleBySlug<T>(
+  slug: string,
+  columns = "*",
+): Promise<T | null> {
+  for (const candidate of getArticleSlugCandidates(slug)) {
+    const { data, error } = await supabase
+      .from("articles")
+      .select(columns)
+      .eq("slug", candidate)
+      .maybeSingle();
+
+    if (error) {
+      if (error.code === "PGRST116") continue;
+      throw error;
+    }
+    if (data) return data as T;
+  }
+
+  return null;
 }
 
 export async function getArticles(page = 1): Promise<{
@@ -64,31 +101,13 @@ export async function getArticles(page = 1): Promise<{
 export async function getArticleBySlug(
   slug: string,
 ): Promise<Article | null> {
-  const normalized = normalizeArticleSlugParam(slug);
-  const collapsed = normalized.includes("-")
-    ? normalized.replace(/-/g, "")
-    : normalized;
+  return queryArticleBySlug<Article>(slug);
+}
 
-  const trySlugs =
-    collapsed === normalized
-      ? [normalized]
-      : [normalized, collapsed];
-
-  for (const candidate of trySlugs) {
-    const { data, error } = await supabase
-      .from("articles")
-      .select("*")
-      .eq("slug", candidate)
-      .maybeSingle();
-
-    if (error) {
-      if (error.code === "PGRST116") continue;
-      throw error;
-    }
-    if (data) return data;
-  }
-
-  return null;
+export async function getArticleMetadataBySlug(
+  slug: string,
+): Promise<ArticleMetadata | null> {
+  return queryArticleBySlug<ArticleMetadata>(slug, ARTICLE_METADATA_COLUMNS);
 }
 
 export async function getAllSlugs(): Promise<string[]> {
