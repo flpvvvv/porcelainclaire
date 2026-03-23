@@ -72,12 +72,13 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
     source: ["src", "type"],
     "*": ["class", "style"],
   },
+  // WeChat HTML often sets inline `color` for light backgrounds; keeping it
+  // breaks dark mode contrast. Theme tokens (.article-content) supply text color.
   allowedStyles: {
     "*": {
       "text-align": [/.*/],
       "font-size": [/.*/],
       "line-height": [/.*/],
-      color: [/.*/],
       "margin-top": [/.*/],
       "margin-bottom": [/.*/],
     },
