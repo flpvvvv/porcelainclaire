@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleCard } from "@/components/ArticleCard";
 import { getArticles } from "@/lib/articles";
+import type { ArticleListItem } from "@/lib/articles";
 import Link from "next/link";
 
 export const revalidate = 3600;
@@ -9,19 +10,21 @@ export const revalidate = 3600;
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ cursor?: string }>;
 }) {
   const params = await searchParams;
-  const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
+  const cursor = params.cursor || undefined;
 
-  let articles: Awaited<ReturnType<typeof getArticles>>["articles"] = [];
-  let totalPages = 1;
+  let articles: ArticleListItem[] = [];
+  let hasMore = false;
+  let nextCursor: string | null = null;
   let fetchError = false;
 
   try {
-    const result = await getArticles(page);
+    const result = await getArticles(cursor);
     articles = result.articles;
-    totalPages = result.totalPages;
+    hasMore = result.hasMore;
+    nextCursor = result.nextCursor;
   } catch {
     fetchError = true;
   }
@@ -59,31 +62,25 @@ export default async function HomePage({
                 ))}
               </div>
 
-              {totalPages > 1 && (
+              {(cursor || hasMore) && (
                 <nav
-                  className="mt-10 flex items-center justify-center gap-2"
+                  className="mt-10 flex items-center justify-center gap-4"
                   aria-label="分页"
                 >
-                  {page > 1 && (
+                  {cursor && (
                     <Link
-                      href={`/?page=${page - 1}`}
+                      href="/"
                       className="rounded-md border border-border px-4 py-2 text-sm text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
                     >
-                      上一页
+                      ← 最新文章
                     </Link>
                   )}
-                  <span
-                    className="px-3 py-2 text-sm text-foreground-secondary"
-                    style={{ fontVariantNumeric: "tabular-nums" }}
-                  >
-                    {page} / {totalPages}
-                  </span>
-                  {page < totalPages && (
+                  {hasMore && nextCursor && (
                     <Link
-                      href={`/?page=${page + 1}`}
+                      href={`/?cursor=${encodeURIComponent(nextCursor)}`}
                       className="rounded-md border border-border px-4 py-2 text-sm text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
                     >
-                      下一页
+                      更早文章 →
                     </Link>
                   )}
                 </nav>

@@ -20,9 +20,16 @@ export type ArticleMetadata = Pick<
   "slug" | "title" | "summary" | "cover_image_url" | "published_at"
 >;
 
+export type ArticleListItem = Pick<
+  Article,
+  "id" | "slug" | "title" | "summary" | "cover_image_url" | "published_at"
+>;
+
 const ARTICLES_PER_PAGE = 12;
 const ARTICLE_METADATA_COLUMNS =
   "slug,title,summary,cover_image_url,published_at";
+const ARTICLE_LIST_COLUMNS =
+  "id,slug,title,summary,cover_image_url,published_at";
 
 /** Dynamic route params may arrive percent-encoded; DB slugs are stored decoded (UTF-8). */
 function normalizeArticleSlugParam(slug: string): string {
@@ -69,32 +76,35 @@ async function queryArticleBySlug<T>(
   return null;
 }
 
-export async function getArticles(page = 1): Promise<{
-  articles: Article[];
-  total: number;
-  totalPages: number;
+export async function getArticles(cursor?: string): Promise<{
+  articles: ArticleListItem[];
+  hasMore: boolean;
+  nextCursor: string | null;
 }> {
-  const from = (page - 1) * ARTICLES_PER_PAGE;
-  const to = from + ARTICLES_PER_PAGE - 1;
-
-  const { count } = await supabase
+  let query = supabase
     .from("articles")
-    .select("*", { count: "exact", head: true });
-
-  const { data, error } = await supabase
-    .from("articles")
-    .select("*")
+    .select(ARTICLE_LIST_COLUMNS)
     .order("published_at", { ascending: false })
-    .range(from, to);
+    .limit(ARTICLES_PER_PAGE + 1);
 
+  if (cursor) {
+    query = query.lt("published_at", cursor);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
 
-  const total = count ?? 0;
+  const articles = (data ?? []) as ArticleListItem[];
+  const hasMore = articles.length > ARTICLES_PER_PAGE;
+  if (hasMore) articles.pop();
 
   return {
-    articles: data ?? [],
-    total,
-    totalPages: Math.ceil(total / ARTICLES_PER_PAGE),
+    articles,
+    hasMore,
+    nextCursor:
+      hasMore && articles.length > 0
+        ? articles[articles.length - 1].published_at
+        : null,
   };
 }
 

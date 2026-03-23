@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Article } from "@/lib/articles";
+import type { ArticleListItem } from "@/lib/articles";
 import { formatDate } from "@/lib/articles";
 
-export function ArticleCard({ article }: { article: Article }) {
+export function ArticleCard({ article }: { article: ArticleListItem }) {
   return (
     <Link
       href={`/articles/${encodeURIComponent(article.slug)}`}
