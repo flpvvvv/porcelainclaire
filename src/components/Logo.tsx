@@ -3,25 +3,25 @@ export function Logo({ size = 36 }: { size?: number }) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 285.75 285.75"
+      viewBox="0 0 285.8 285.8"
       fill="none"
       role="img"
       aria-label="Porcelain Claire"
     >
       <circle
-        cx="142.875"
-        cy="142.875"
-        r="129.646"
+        cx="142.9"
+        cy="142.9"
+        r="129.6"
         stroke="currentColor"
-        strokeWidth="5.292"
+        strokeWidth="5.3"
         fill="none"
       />
       <circle
-        cx="142.875"
-        cy="142.875"
-        r="116.417"
+        cx="142.9"
+        cy="142.9"
+        r="116.4"
         stroke="currentColor"
-        strokeWidth="5.292"
+        strokeWidth="5.3"
         fill="none"
       />
       <text

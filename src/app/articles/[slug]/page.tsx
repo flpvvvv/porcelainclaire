@@ -7,8 +7,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WeChatButton } from "@/components/WeChatButton";
 import {
-  getArticleBySlug,
-  getArticleMetadataBySlug,
+  getCachedArticleBySlug,
   getAllSlugs,
   formatDate,
 } from "@/lib/articles";
@@ -33,7 +32,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticleMetadataBySlug(slug);
+  const article = await getCachedArticleBySlug(slug);
   if (!article) return {};
 
   return {
@@ -85,7 +84,7 @@ export default async function ArticlePage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getCachedArticleBySlug(slug);
 
   if (!article) notFound();
 

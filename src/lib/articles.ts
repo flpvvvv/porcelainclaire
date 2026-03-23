@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { supabase } from "./supabase";
 
 export interface Article {
@@ -59,17 +60,15 @@ async function queryArticleBySlug<T>(
   slug: string,
   columns = "*",
 ): Promise<T | null> {
-  for (const candidate of getArticleSlugCandidates(slug)) {
-    const { data, error } = await supabase
-      .from("articles")
-      .select(columns)
-      .eq("slug", candidate)
-      .maybeSingle();
+  const candidates = getArticleSlugCandidates(slug);
+  const results = await Promise.all(
+    candidates.map((c) =>
+      supabase.from("articles").select(columns).eq("slug", c).maybeSingle()
+    )
+  );
 
-    if (error) {
-      if (error.code === "PGRST116") continue;
-      throw error;
-    }
+  for (const { data, error } of results) {
+    if (error && error.code !== "PGRST116") throw error;
     if (data) return data as T;
   }
 
@@ -114,6 +113,8 @@ export async function getArticleBySlug(
   return queryArticleBySlug<Article>(slug);
 }
 
+export const getCachedArticleBySlug = cache(getArticleBySlug);
+
 export async function getArticleMetadataBySlug(
   slug: string,
 ): Promise<ArticleMetadata | null> {
@@ -130,10 +131,12 @@ export async function getAllSlugs(): Promise<string[]> {
   return (data ?? []).map((a) => a.slug);
 }
 
+const zhDateFormatter = new Intl.DateTimeFormat("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
 export function formatDate(dateString: string): string {
-  return new Intl.DateTimeFormat("zh-CN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(new Date(dateString));
+  return zhDateFormatter.format(new Date(dateString));
 }
