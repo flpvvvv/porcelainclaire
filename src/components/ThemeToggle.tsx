@@ -18,7 +18,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className="h-9 w-9 rounded-full"
+        className="h-9 w-9 shrink-0 rounded-full bg-surface-muted"
         aria-label="切换主题"
         disabled
       />

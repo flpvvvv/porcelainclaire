@@ -8,11 +8,11 @@ export default function NotFound() {
       <Header />
       <main
         id="main-content"
-        className="flex flex-1 flex-col items-center justify-center px-4 py-20"
+        className="flex flex-1 flex-col items-center justify-center px-4 py-20 pt-[calc(3.35rem+3rem)] sm:pt-[calc(3.5rem+3rem)]"
       >
-        <p className="text-6xl font-bold text-accent">404</p>
+        <p className="font-display text-6xl font-semibold text-accent">404</p>
         <h1
-          className="mt-4 text-xl font-semibold text-foreground"
+          className="font-display mt-4 text-xl font-semibold text-foreground"
           style={{ textWrap: "balance" } as React.CSSProperties}
         >
           页面未找到
@@ -22,7 +22,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="mt-6 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+          className="mt-6 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-hover"
         >
           返回首页
         </Link>

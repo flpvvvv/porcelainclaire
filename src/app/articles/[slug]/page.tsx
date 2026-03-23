@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import sanitizeHtml from "sanitize-html";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ReadingProgress } from "@/components/ReadingProgress";
 import { WeChatButton } from "@/components/WeChatButton";
 import {
   getCachedArticleBySlug,
@@ -93,11 +94,16 @@ export default async function ArticlePage({
   return (
     <>
       <Header />
-      <main id="main-content" className="flex-1">
-        <article className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+      <main
+        id="main-content"
+        className="flex-1 pt-[3.35rem] sm:pt-14"
+      >
+        <article className="article-shell px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
+          <ReadingProgress targetId="article-reading" />
+          <div id="article-reading">
           <Link
             href="/"
-            className="mb-6 inline-flex items-center gap-1.5 text-sm text-foreground-secondary transition-colors hover:text-accent"
+            className="mb-8 inline-flex items-center gap-1.5 text-sm text-foreground-tertiary transition-colors hover:text-accent"
           >
             <svg
               width="16"
@@ -116,41 +122,46 @@ export default async function ArticlePage({
           </Link>
 
           {article.cover_image_url && (
-            <div className="relative mb-8 aspect-[2/1] overflow-hidden rounded-xl">
+            <div className="relative mb-10 aspect-[16/10] overflow-hidden rounded-lg border border-border shadow-[var(--card-shadow)] sm:aspect-[2/1] sm:rounded-xl">
               <Image
                 src={article.cover_image_url}
                 alt={article.title}
                 fill
-                sizes="(max-width: 768px) 100vw, 768px"
+                sizes="(max-width: 768px) 100vw, 42rem"
                 className="object-cover"
                 priority
               />
             </div>
           )}
 
-          <header className="mb-8">
+          <header className="mb-10 border-b border-[var(--reading-rule)] pb-8">
+            <p className="font-display text-[0.7rem] font-medium tracking-[0.2em] text-foreground-tertiary sm:text-xs">
+              阅读
+            </p>
             <h1
-              className="text-2xl font-bold leading-tight text-foreground sm:text-3xl"
+              className="font-display mt-3 text-[1.65rem] font-semibold leading-[1.2] tracking-tight text-foreground sm:text-3xl lg:text-[2rem]"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
               {article.title}
             </h1>
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-foreground-secondary">
-              <span>{article.author}</span>
-              <span aria-hidden="true">&middot;</span>
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-foreground-secondary">
+              <span className="font-medium text-foreground">{article.author}</span>
+              <span className="text-foreground-tertiary" aria-hidden="true">
+                /
+              </span>
               <time
                 dateTime={article.published_at}
-                style={{ fontVariantNumeric: "tabular-nums" }}
+                className="tabular-nums text-foreground-secondary"
               >
                 {formatDate(article.published_at)}
               </time>
             </div>
             {article.tags && article.tags.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 {article.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-accent-light px-2.5 py-0.5 text-xs text-accent"
+                    className="rounded-sm border border-border bg-surface-muted px-2.5 py-1 text-xs text-foreground-secondary"
                   >
                     {tag}
                   </span>
@@ -164,11 +175,12 @@ export default async function ArticlePage({
             dangerouslySetInnerHTML={{ __html: cleanHtml }}
           />
 
-          <div className="mt-12 flex flex-col items-center gap-4 rounded-xl border border-border bg-surface p-6 text-center">
+          <div className="mt-14 flex flex-col items-center gap-4 rounded-lg border border-border-strong/60 bg-surface p-6 text-center shadow-[var(--card-shadow)] sm:p-8">
             <p className="text-sm text-foreground-secondary">
               喜欢这篇文章？在微信中互动
             </p>
             <WeChatButton url={article.wechat_url} />
+          </div>
           </div>
         </article>
       </main>

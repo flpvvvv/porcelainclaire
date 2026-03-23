@@ -13,14 +13,17 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-      <main id="main-content" className="flex-1">
-        <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-16">
+      <main
+        id="main-content"
+        className="flex-1 pt-[3.35rem] sm:pt-14"
+      >
+        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 lg:py-20">
           <div className="flex flex-col items-center text-center">
             <div className="text-accent">
               <Logo size={80} />
             </div>
             <h1
-              className="mt-6 text-2xl font-bold text-foreground sm:text-3xl"
+              className="font-display mt-6 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
               style={{ textWrap: "balance" } as React.CSSProperties}
             >
               关于 Porcelain Claire
@@ -32,8 +35,10 @@ export default function AboutPage() {
 
           <div className="mt-12 space-y-8">
             <section>
-              <h2 className="text-lg font-semibold text-foreground">简介</h2>
-              <div className="mt-3 space-y-4 text-foreground-secondary leading-relaxed">
+              <h2 className="font-display text-lg font-semibold text-foreground">
+                简介
+              </h2>
+              <div className="mt-3 space-y-4 leading-relaxed text-foreground-secondary">
                 <p>
                   你好，我是 Claire。欢迎来到我的个人博客。
                 </p>
@@ -45,7 +50,7 @@ export default function AboutPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="font-display text-lg font-semibold text-foreground">
                 联系方式
               </h2>
               <div className="mt-3 space-y-3">
@@ -62,13 +67,13 @@ export default function AboutPage() {
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="font-display text-lg font-semibold text-foreground">
                 关注公众号
               </h2>
               <p className="mt-3 text-sm text-foreground-secondary">
                 扫描下方二维码，关注我的微信公众号获取最新文章推送。
               </p>
-              <div className="mt-4 inline-block overflow-hidden rounded-xl border border-border bg-white">
+              <div className="mt-4 inline-block overflow-hidden rounded-xl border border-border bg-surface-muted">
                 <Image
                   src="/wechat-qr.png"
                   width={160}
