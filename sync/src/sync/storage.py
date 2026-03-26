@@ -173,8 +173,6 @@ def upsert_article(
         "tags": tags or [],
     }
 
-    result = (
-        client.table("articles").upsert(row, on_conflict="slug").execute()
-    )
+    result = client.table("articles").upsert(row, on_conflict="slug").execute()
 
     return result.data[0] if result.data else row

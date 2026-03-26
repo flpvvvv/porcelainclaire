@@ -192,6 +192,19 @@ summary:focus-visible {
   color: var(--foreground-secondary);
 }
 
+.tag-compact {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent-light) 72%, transparent);
+  border: none;
+}
+
 .reader-stat {
   display: inline-flex;
   align-items: center;

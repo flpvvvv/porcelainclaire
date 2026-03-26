@@ -204,12 +204,15 @@ export default async function ArticlePage({
                 </h1>
 
                 {article.tags && article.tags.length > 0 && (
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {article.tags.map((tag) => (
-                      <span key={tag} className="soft-pill">
-                        {tag}
-                      </span>
-                    ))}
+                  <div className="mt-5">
+                    <p className="section-kicker mb-3">主题标签</p>
+                    <div className="flex flex-wrap gap-2" aria-label="文章标签">
+                      {article.tags.map((tag, idx) => (
+                        <span key={`${tag}-${idx}`} className="soft-pill">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </header>

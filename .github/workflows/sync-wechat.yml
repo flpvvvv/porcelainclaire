@@ -8,15 +8,12 @@ on:
           One or more WeChat article URLs — one per line, or comma-separated.
         required: true
         type: string
-      tags:
-        description: "Comma-separated tags applied to every imported article"
-        required: false
-        type: string
 
 env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
   REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET }}
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
   SITE_URL: https://porcelainclaire.com
   VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
 
@@ -40,16 +37,11 @@ jobs:
         working-directory: sync
         env:
           ARTICLE_URLS: ${{ github.event.inputs.article_urls }}
-          TAGS: ${{ github.event.inputs.tags }}
         run: |
           set -euo pipefail
           if [ -z "${ARTICLE_URLS//[$' \t\r\n']/}" ]; then
             echo "article_urls is empty."
             exit 1
-          fi
-          TAGS_ARG=()
-          if [ -n "${TAGS:-}" ]; then
-            TAGS_ARG=(--tags "$TAGS")
           fi
           count=0
           while IFS= read -r raw || [ -n "$raw" ]; do
@@ -58,7 +50,7 @@ jobs:
             [ -z "$url" ] && continue
             count=$((count + 1))
             echo "=== Importing ($count): $url ==="
-            uv run sync article "$url" "${TAGS_ARG[@]}"
+            uv run sync article "$url"
           done < <(printf '%s' "$ARTICLE_URLS" | tr ',' '\n')
           echo "Done. Imported $count article(s)."
 

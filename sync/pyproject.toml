@@ -9,6 +9,8 @@ dependencies = [
     "supabase>=2.12",
     "click>=8.1",
     "feedparser>=6.0",
+    "google-genai>=1.68.0",
+    "python-dotenv>=1.2.2",
 ]
 
 [project.scripts]

@@ -24,7 +24,13 @@ export type ArticleMetadata = Pick<
 
 export type ArticleListItem = Pick<
   Article,
-  "id" | "slug" | "title" | "summary" | "cover_image_url" | "published_at"
+  | "id"
+  | "slug"
+  | "title"
+  | "summary"
+  | "cover_image_url"
+  | "published_at"
+  | "tags"
 > & {
   readingTimeMinutes: number;
 };
@@ -38,13 +44,14 @@ type ArticleListRow = Pick<
   | "content_html"
   | "cover_image_url"
   | "published_at"
+  | "tags"
 >;
 
 const ARTICLES_PER_PAGE = 12;
 const ARTICLE_METADATA_COLUMNS =
   "slug,title,summary,cover_image_url,published_at";
 const ARTICLE_LIST_COLUMNS =
-  "id,slug,title,summary,content_html,cover_image_url,published_at";
+  "id,slug,title,summary,content_html,cover_image_url,published_at,tags";
 
 /** Dynamic route params may arrive percent-encoded; DB slugs are stored decoded (UTF-8). */
 function normalizeArticleSlugParam(slug: string): string {

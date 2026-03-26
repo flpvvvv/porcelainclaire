@@ -62,9 +62,7 @@ def _extract_publish_date(html: str) -> str:
         import datetime
 
         ts = int(match.group(1))
-        return datetime.datetime.fromtimestamp(ts, tz=datetime.UTC).strftime(
-            "%Y-%m-%d"
-        )
+        return datetime.datetime.fromtimestamp(ts, tz=datetime.UTC).strftime("%Y-%m-%d")
 
     return ""
 
@@ -124,20 +122,12 @@ def parse_article(html: str) -> ParsedArticle:
     title_el = soup.find("h1", class_="rich_media_title") or soup.find("h1")
     title = title_el.get_text(strip=True) if title_el else "无标题"
 
-    author_el = soup.find("span", class_="rich_media_meta_text") or soup.find(
-        "a", id="js_name"
-    )
-    author = (
-        _normalize_author(author_el.get_text(strip=True))
-        if author_el
-        else "Claire"
-    )
+    author_el = soup.find("span", class_="rich_media_meta_text") or soup.find("a", id="js_name")
+    author = _normalize_author(author_el.get_text(strip=True)) if author_el else "Claire"
 
     published_at = _extract_publish_date(html)
 
-    content_el = soup.find("div", class_="rich_media_content") or soup.find(
-        "div", id="js_content"
-    )
+    content_el = soup.find("div", class_="rich_media_content") or soup.find("div", id="js_content")
     if content_el is None:
         content_html = ""
         image_urls: list[str] = []
