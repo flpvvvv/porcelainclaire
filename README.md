@@ -16,7 +16,7 @@
 | 路径 | 说明 |
 |------|------|
 | `app/` | Next.js 应用与路由 |
-| `sync/` | 微信文章 / RSS 同步 CLI |
+| `sync/` | 微信文章同步 CLI |
 | `supabase/migrations/` | 数据库迁移 SQL |
 
 ## 本地开发
@@ -51,12 +51,6 @@ uv run sync backfill-tags --dry-run --limit 5 --order random --seed 42  # 随机
 ```
 
 `--order`：`newest`（默认）、`oldest`、`random`。与 `--limit N` 联用便于调试提示词与参数。
-
-从 RSS 源批量导入：
-
-```bash
-uv run sync rss "https://your-rss-bridge/feed-url"
-```
 
 ## 环境变量
 

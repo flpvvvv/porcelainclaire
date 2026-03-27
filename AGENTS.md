@@ -10,6 +10,6 @@ Personal blog (个人博客); articles are synced from WeChat into Supabase.
 
 - **App**: Next.js (App Router), React 19, TypeScript, Tailwind CSS v4 — see `app/`.
 - **Data**: Supabase (PostgreSQL); SQL migrations in `supabase/migrations/`.
-- **Sync**: Python package under `sync/` (uv); imports WeChat URLs or RSS into the database.
+- **Sync**: Python package under `sync/` (uv); imports WeChat URLs into the database.
 
 Human-facing setup, env vars, and commands: [README.md](./README.md).

@@ -100,69 +100,6 @@ def article(url: str, revalidate: bool) -> None:
     click.echo("Done!")
 
 
-@cli.command()
-@click.argument("feed_url")
-def rss(feed_url: str) -> None:
-    """Discover and import new articles from an RSS feed.
-
-    Parameters
-    ----------
-    feed_url : str
-        URL of the RSS feed for the WeChat account.
-    """
-    import feedparser
-
-    click.echo(f"Fetching RSS feed: {feed_url}")
-    feed = feedparser.parse(feed_url)
-
-    if not feed.entries:
-        click.echo("No entries found in feed.")
-        return
-
-    client = _get_client()
-
-    existing = client.table("articles").select("wechat_url").execute()
-    known_urls = {r["wechat_url"] for r in (existing.data or [])}
-
-    new_entries = [e for e in feed.entries if e.get("link") not in known_urls]
-    click.echo(f"Found {len(new_entries)} new article(s).")
-
-    for entry in new_entries:
-        entry_url = entry.get("link", "")
-        if not entry_url:
-            continue
-
-        click.echo(f"\nImporting: {entry.get('title', entry_url)}")
-        try:
-            html = fetch_article_html(entry_url)
-            parsed = parse_article(html)
-
-            if parsed.image_urls:
-                parsed.content_html = rehost_images(client, parsed.content_html, parsed.image_urls)
-                if parsed.cover_image_url:
-                    try:
-                        parsed.cover_image_url = upload_image(client, parsed.cover_image_url)
-                    except Exception:
-                        pass
-
-            row = upsert_article(
-                client,
-                title=parsed.title,
-                author=parsed.author,
-                published_at=parsed.published_at,
-                content_html=parsed.content_html,
-                cover_image_url=parsed.cover_image_url,
-                wechat_url=entry_url,
-                summary=parsed.summary,
-            )
-            click.echo(f"  Imported: {row.get('slug', 'unknown')}")
-        except Exception as exc:
-            click.echo(f"  Error: {exc}")
-
-    _trigger_revalidation(None)
-    click.echo("\nSync complete!")
-
-
 @cli.command("backfill-tags")
 @click.option(
     "--dry-run",
