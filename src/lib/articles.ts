@@ -166,3 +166,14 @@ const zhDateFormatter = new Intl.DateTimeFormat("zh-CN", {
 export function formatDate(dateString: string): string {
   return zhDateFormatter.format(new Date(dateString));
 }
+
+/** True if `publishedAt` is within the last `days` calendar days (from now). */
+export function isPublishedWithinDays(
+  publishedAt: string,
+  days: number,
+): boolean {
+  const published = new Date(publishedAt).getTime();
+  if (Number.isNaN(published)) return false;
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  return published >= cutoff;
+}

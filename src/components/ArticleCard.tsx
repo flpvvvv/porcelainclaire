@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ArticleListItem } from "@/lib/articles";
-import { formatDate } from "@/lib/articles";
+import { formatDate, isPublishedWithinDays } from "@/lib/articles";
 import { formatReadingTime } from "@/lib/reading";
 
 type ArticleCardProps = {
@@ -18,6 +18,8 @@ export function ArticleCard({
   revealIndex = 0,
 }: ArticleCardProps) {
   const delayMs = Math.min(revealIndex * 70, 420);
+  const showRecentPill =
+    !featured && isPublishedWithinDays(article.published_at, 30);
 
   return (
     <Link
@@ -78,9 +80,11 @@ export function ArticleCard({
               本期慢读
             </span>
           ) : (
-            <span className="soft-pill border-white/20 bg-black/18 text-white/90">
-              新近更新
-            </span>
+            showRecentPill && (
+              <span className="soft-pill border-white/20 bg-black/18 text-white/90">
+                新近更新
+              </span>
+            )
           )}
         </div>
       </div>
