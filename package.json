@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "icons": "node scripts/generate-icons.mjs",
     "prepare": "husky"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
     "eslint-config-next": "16.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
