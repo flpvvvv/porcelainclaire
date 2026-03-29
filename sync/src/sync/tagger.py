@@ -133,7 +133,8 @@ def _dedupe_preserve_order(tags: list[str]) -> list[str]:
     return out
 
 
-def _html_to_plain_text(content_html: str) -> str:
+def html_to_plain_text(content_html: str) -> str:
+    """Strip HTML to plain text (search index, tagger input)."""
     soup = BeautifulSoup(content_html, "html.parser")
     text = soup.get_text(separator="\n")
     text = re.sub(r"\n{3,}", "\n\n", text)
@@ -146,7 +147,7 @@ def generate_tags(content_html: str) -> list[str]:
     if not api_key:
         return []
 
-    plain = _html_to_plain_text(content_html)
+    plain = html_to_plain_text(content_html)
     if not plain:
         return []
 

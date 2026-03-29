@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ArticleSearchDialog } from "./ArticleSearchDialog";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   const [concealed, setConcealed] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     let lastY = typeof window !== "undefined" ? window.scrollY : 0;
@@ -24,6 +26,17 @@ export function Header() {
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   return (
@@ -56,6 +69,28 @@ export function Header() {
             </Link>
 
             <nav className="flex items-center gap-1" aria-label="主导航">
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full text-foreground-secondary transition-[background-color,color] duration-200 hover:bg-accent-soft hover:text-foreground sm:min-w-0 sm:gap-1.5 sm:px-3.5"
+                aria-label="搜索文章"
+                title="搜索（⌘K）"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+                <span className="hidden text-sm font-medium sm:inline">搜索</span>
+              </button>
               <Link
                 href="/"
                 className="inline-flex min-h-11 items-center rounded-full px-3.5 text-sm font-medium text-foreground-secondary transition-[background-color,color] duration-200 hover:bg-accent-soft hover:text-foreground sm:px-4"
@@ -73,6 +108,10 @@ export function Header() {
         </div>
       </div>
       </div>
+      <ArticleSearchDialog
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
     </header>
   );
 }

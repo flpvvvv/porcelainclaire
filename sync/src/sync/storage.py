@@ -10,6 +10,7 @@ from mimetypes import guess_type
 from supabase import Client, create_client
 
 from .fetcher import download_image
+from .tagger import html_to_plain_text
 
 _BUCKET = "article-images"
 
@@ -160,6 +161,9 @@ def upsert_article(
         The upserted row data from Supabase.
     """
     slug = _slugify(title)
+    content_text = html_to_plain_text(content_html)
+    # Collapse whitespace to a single line for DB search snippets / indexing.
+    content_text = re.sub(r"\s+", " ", content_text).strip()
 
     row = {
         "slug": slug,
@@ -167,6 +171,7 @@ def upsert_article(
         "author": author,
         "published_at": published_at or "2024-01-01",
         "content_html": content_html,
+        "content_text": content_text,
         "cover_image_url": cover_image_url,
         "wechat_url": wechat_url,
         "summary": summary,

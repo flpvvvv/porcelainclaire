@@ -138,9 +138,11 @@ body::after {
   opacity: 0.5;
 }
 
-body > * {
-  position: relative;
-  z-index: 1;
+@layer base {
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 ::selection {
