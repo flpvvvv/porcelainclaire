@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { PwaInstallProvider } from "@/components/PwaInstallProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
 
@@ -51,14 +52,16 @@ export default function RootLayout({
       </head>
       <body id="top" className="min-h-dvh flex flex-col antialiased">
         <ThemeProvider>
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
-          >
-            跳到主要内容
-          </a>
-          {children}
-          <ServiceWorkerRegistration />
+          <PwaInstallProvider>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
+            >
+              跳到主要内容
+            </a>
+            {children}
+            <ServiceWorkerRegistration />
+          </PwaInstallProvider>
         </ThemeProvider>
       </body>
     </html>

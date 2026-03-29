@@ -622,6 +622,10 @@ summary:focus-visible {
   backdrop-filter: blur(20px);
 }
 
+.pwa-install-sheet-panel {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+
 .desktop-back-top {
   display: inline-flex;
   min-height: 2.9rem;

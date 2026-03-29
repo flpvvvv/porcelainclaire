@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { WeChatButton } from "@/components/WeChatButton";
+import { PwaInstallCallout } from "@/components/PwaInstallCallout";
 import {
   getCachedArticleBySlug,
   getAllSlugs,
@@ -240,17 +241,20 @@ export default async function ArticlePage({
               </div>
 
               <div className="editorial-card mt-8 rounded-[1.6rem] p-5 sm:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="section-kicker">继续互动</p>
-                    <h2 className="font-display mt-2 text-xl font-semibold text-foreground">
-                      在微信里继续这次阅读
-                    </h2>
-                    <p className="mt-2 text-sm leading-7 text-foreground-secondary">
-                      如果你想点赞、分享、收藏或打赏，这篇文章也同步发布在微信公众号里。
-                    </p>
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="section-kicker">继续互动</p>
+                      <h2 className="font-display mt-2 text-xl font-semibold text-foreground">
+                        在微信里继续这次阅读
+                      </h2>
+                      <p className="mt-2 text-sm leading-7 text-foreground-secondary">
+                        如果你想点赞、分享、收藏或打赏，这篇文章也同步发布在微信公众号里。
+                      </p>
+                    </div>
+                    <WeChatButton url={article.wechat_url} />
                   </div>
-                  <WeChatButton url={article.wechat_url} />
+                  <PwaInstallCallout layout="compact" />
                 </div>
               </div>
             </div>

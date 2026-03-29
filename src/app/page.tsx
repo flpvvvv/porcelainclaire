@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleCard } from "@/components/ArticleCard";
+import { PwaInstallCallout } from "@/components/PwaInstallCallout";
 import { getArticles, type ArticleListItem } from "@/lib/articles";
 
 export const revalidate = 3600;
@@ -156,6 +157,7 @@ export default async function HomePage({
                 认识 Claire
               </Link>
             </div>
+            <PwaInstallCallout layout="full" />
             <div className="mt-10 max-w-sm">
               <div className="editorial-divider" aria-hidden="true" />
             </div>
