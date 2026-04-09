@@ -182,6 +182,56 @@ summary:focus-visible {
   backdrop-filter: blur(18px);
 }
 
+.tag-cloud-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.tag-cloud-panel::after {
+  content: "";
+  position: absolute;
+  inset: -45% -25% auto auto;
+  width: min(58%, 26rem);
+  height: min(58%, 26rem);
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 14%, transparent) 0,
+    transparent 70%
+  );
+  opacity: 0.85;
+}
+
+.dark .tag-cloud-panel::after {
+  opacity: 0.55;
+}
+
+.tag-cloud-canvas {
+  isolation: isolate;
+}
+
+.tag-cloud-link[data-tier="1"],
+.tag-cloud-link[data-tier="2"] {
+  color: color-mix(in srgb, var(--accent) 88%, var(--foreground-secondary));
+}
+
+.tag-cloud-link:focus-visible {
+  z-index: 60 !important;
+}
+
+.tag-cloud-link--active {
+  box-shadow:
+    var(--float-shadow),
+    0 0 0 1px color-mix(in srgb, var(--accent-foreground) 22%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag-cloud-canvas [role="list"] {
+    transition: none !important;
+  }
+}
+
 .soft-pill {
   display: inline-flex;
   align-items: center;

@@ -1,34 +1,45 @@
+import type { CSSProperties } from "react";
 import { Suspense } from "react";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleCard } from "@/components/ArticleCard";
 import { PwaInstallCallout } from "@/components/PwaInstallCallout";
-import { getArticles, type ArticleListItem } from "@/lib/articles";
+import { TagCloudSection } from "@/components/TagCloudSection";
+import {
+  getArticleCountByTag,
+  getArticles,
+  type ArticleListItem,
+} from "@/lib/articles";
+import { getTagCloud } from "@/lib/tags";
 
 export const revalidate = 3600;
 
-function ArticleListSkeleton() {
+function ArticleListSkeleton({ uniform }: { uniform?: boolean }) {
   return (
     <div className="mt-8 grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-8">
       {Array.from({ length: 6 }, (_, i) => (
         <div
           key={i}
-          className={i === 0 ? "lg:col-span-7 lg:row-span-2" : "lg:col-span-5 xl:col-span-4"}
+          className={
+            uniform || i !== 0
+              ? "lg:col-span-5 xl:col-span-4"
+              : "lg:col-span-7 lg:row-span-2"
+          }
         >
           <div className="editorial-card overflow-hidden rounded-[1.6rem]">
             <div
               className={`animate-pulse bg-accent-light/90 ${
-                i === 0
+                !uniform && i === 0
                   ? "aspect-[4/3] sm:aspect-[16/9]"
                   : "aspect-[4/3]"
               }`}
             />
-            <div className={`space-y-3 ${i === 0 ? "p-6" : "p-5"}`}>
+            <div className={`space-y-3 ${!uniform && i === 0 ? "p-6" : "p-5"}`}>
               <div className="h-9 w-48 animate-pulse rounded-full bg-accent-light" />
               <div
                 className={`animate-pulse rounded bg-accent-light ${
-                  i === 0 ? "h-9 w-full" : "h-6 w-full"
+                  !uniform && i === 0 ? "h-9 w-full" : "h-6 w-full"
                 }`}
               />
               <div className="h-4 w-[80%] animate-pulse rounded bg-accent-light" />
@@ -41,13 +52,26 @@ function ArticleListSkeleton() {
   );
 }
 
-async function ArticleList({ cursor }: { cursor?: string }) {
+function tagHref(tag: string, cursor?: string) {
+  const base = `/?tag=${encodeURIComponent(tag)}`;
+  return cursor ? `${base}&cursor=${encodeURIComponent(cursor)}` : base;
+}
+
+async function ArticleList({
+  cursor,
+  tag,
+  totalCount,
+}: {
+  cursor?: string;
+  tag?: string;
+  totalCount: number | null;
+}) {
   let articles: ArticleListItem[] = [];
   let hasMore = false;
   let nextCursor: string | null = null;
 
   try {
-    const result = await getArticles(cursor);
+    const result = await getArticles(cursor, tag ? { tag } : undefined);
     articles = result.articles;
     hasMore = result.hasMore;
     nextCursor = result.nextCursor;
@@ -62,6 +86,22 @@ async function ArticleList({ cursor }: { cursor?: string }) {
   }
 
   if (articles.length === 0) {
+    if (tag) {
+      return (
+        <div className="editorial-card mt-8 rounded-[1.6rem] p-10 text-center">
+          <p className="text-foreground-secondary">
+            还没有带标签「{tag}」的文章。
+          </p>
+          <Link
+            href="/"
+            scroll={false}
+            className="mt-6 inline-flex min-h-11 items-center rounded-full border border-border bg-surface/85 px-5 text-sm font-medium text-foreground-secondary transition-[border-color,color,background-color] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground"
+          >
+            查看全部文章
+          </Link>
+        </div>
+      );
+    }
     return (
       <div className="editorial-card mt-8 rounded-[1.6rem] p-10 text-center">
         <p className="text-foreground-secondary">暂无文章</p>
@@ -69,10 +109,25 @@ async function ArticleList({ cursor }: { cursor?: string }) {
     );
   }
 
-  const showFeatured = !cursor;
+  const showFeatured = !cursor && !tag;
 
   return (
     <>
+      {tag ? (
+        <p className="mt-4 text-sm text-foreground-secondary">
+          本页展示{" "}
+          <span className="font-medium text-foreground">
+            {articles.length}
+          </span>
+          {totalCount != null && totalCount > articles.length
+            ? ` / 共 ${totalCount} 篇`
+            : totalCount != null && totalCount === articles.length
+              ? " / 已全部列出"
+              : null}
+          。
+        </p>
+      ) : null}
+
       <div className="mt-8 grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-8">
         {articles.map((article, i) => (
           <div
@@ -99,15 +154,21 @@ async function ArticleList({ cursor }: { cursor?: string }) {
         >
           {cursor && (
             <Link
-              href="/"
+              href={tag ? `/?tag=${encodeURIComponent(tag)}` : "/"}
+              scroll={false}
               className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface/85 px-5 text-sm font-medium text-foreground-secondary shadow-[var(--card-shadow)] transition-[border-color,color,background-color] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground"
             >
-              ← 最新文章
+              {tag ? "← 本标签最新" : "← 最新文章"}
             </Link>
           )}
           {hasMore && nextCursor && (
             <Link
-              href={`/?cursor=${encodeURIComponent(nextCursor)}`}
+              href={
+                tag
+                  ? tagHref(tag, nextCursor)
+                  : `/?cursor=${encodeURIComponent(nextCursor)}`
+              }
+              scroll={false}
               className="inline-flex min-h-11 items-center rounded-full border border-transparent bg-accent px-5 text-sm font-medium text-accent-foreground shadow-[var(--float-shadow)] transition-colors hover:bg-accent-hover"
             >
               更早文章 →
@@ -122,10 +183,19 @@ async function ArticleList({ cursor }: { cursor?: string }) {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ cursor?: string }>;
+  searchParams: Promise<{ cursor?: string; tag?: string }>;
 }) {
   const params = await searchParams;
   const cursor = params.cursor || undefined;
+  const tagRaw = params.tag?.trim();
+  const tag = tagRaw || undefined;
+
+  const [tagCloud, tagTotalCount] = await Promise.all([
+    getTagCloud(160),
+    tag ? getArticleCountByTag(tag) : Promise.resolve(null),
+  ]);
+
+  const suspenseKey = `${tag ?? ""}:${cursor ?? ""}`;
 
   return (
     <>
@@ -136,7 +206,7 @@ export default async function HomePage({
             <p className="section-kicker">Porcelain Claire</p>
             <h1
               className="font-display mt-4 text-[2.55rem] font-semibold leading-[1.04] tracking-tight text-foreground sm:text-[3.6rem] lg:text-[4.45rem]"
-              style={{ textWrap: "balance" } as React.CSSProperties}
+              style={{ textWrap: "balance" } satisfies CSSProperties}
             >
               写给愿意慢慢读的人
             </h1>
@@ -151,6 +221,12 @@ export default async function HomePage({
                 开始阅读
               </Link>
               <Link
+                href="#tag-cloud"
+                className="inline-flex min-h-12 items-center rounded-full border border-border bg-surface/80 px-5 text-sm font-medium text-foreground-secondary transition-[border-color,color,background-color] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground"
+              >
+                按标签找文
+              </Link>
+              <Link
                 href="/about"
                 className="inline-flex min-h-12 items-center rounded-full border border-border bg-surface/80 px-5 text-sm font-medium text-foreground-secondary transition-[border-color,color,background-color] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground"
               >
@@ -163,23 +239,77 @@ export default async function HomePage({
             </div>
           </section>
 
+          <div id="tag-cloud">
+            <TagCloudSection items={tagCloud} activeTag={tag} />
+          </div>
+
           <section id="latest-articles" className="mt-14 sm:mt-16">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="section-kicker">
-                  {cursor ? "继续翻阅" : "最近更新"}
+                  {tag
+                    ? cursor
+                      ? "继续翻阅"
+                      : "按标签阅读"
+                    : cursor
+                      ? "继续翻阅"
+                      : "最近更新"}
                 </p>
                 <h2 className="font-display mt-3 text-[1.9rem] font-semibold tracking-tight text-foreground sm:text-[2.4rem]">
-                  {cursor ? "再往前读一些" : "慢读书架"}
+                  {tag ? (
+                    <>
+                      <span className="text-accent">#{tag}</span>
+                      {tagTotalCount != null ? (
+                        <span className="mt-1 block text-[1.05rem] font-normal text-foreground-secondary sm:text-[1.15rem]">
+                          共 {tagTotalCount} 篇
+                        </span>
+                      ) : null}
+                    </>
+                  ) : cursor ? (
+                    "再往前读一些"
+                  ) : (
+                    "慢读书架"
+                  )}
                 </h2>
               </div>
               <p className="max-w-md text-sm leading-7 text-foreground-secondary">
-                {cursor ? "更早的文字依次向前展开。" : "从最新一篇开始读起。"}
+                {tag
+                  ? cursor
+                    ? "在同一标签下继续往前翻。"
+                    : "以下文章都包含你选中的标签。"
+                  : cursor
+                    ? "更早的文字依次向前展开。"
+                    : "从最新一篇开始读起。"}
               </p>
             </div>
 
-            <Suspense key={cursor ?? ""} fallback={<ArticleListSkeleton />}>
-              <ArticleList cursor={cursor} />
+            {tag ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-sm text-foreground-secondary">
+                  筛选中
+                </span>
+                <span className="inline-flex min-h-11 items-center rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">
+                  #{tag}
+                </span>
+                <Link
+                  href="/"
+                  scroll={false}
+                  className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface/85 px-4 text-sm font-medium text-foreground-secondary transition-[border-color,color,background-color] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground"
+                >
+                  清除筛选
+                </Link>
+              </div>
+            ) : null}
+
+            <Suspense
+              key={suspenseKey}
+              fallback={<ArticleListSkeleton uniform={Boolean(tag)} />}
+            >
+              <ArticleList
+                cursor={cursor}
+                tag={tag}
+                totalCount={tagTotalCount}
+              />
             </Suspense>
           </section>
         </div>

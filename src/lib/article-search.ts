@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { getPopularTags } from "./tags";
 
 export type ParsedSearchQuery = {
   /** Free-text terms (after stripping tag / quoted syntax). */
@@ -102,16 +103,19 @@ export type SuggestedArticle = Pick<
   "slug" | "title" | "published_at" | "tags"
 >;
 
-/** Recent articles + tag frequency for empty search state (no RPC). */
+/** Recent articles + global popular tags (same source as homepage word cloud). */
 export async function getSearchSuggestions(): Promise<{
   recent: SuggestedArticle[];
   popularTags: string[];
 }> {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("slug,title,published_at,tags")
-    .order("published_at", { ascending: false })
-    .limit(64);
+  const [{ data, error }, popularTags] = await Promise.all([
+    supabase
+      .from("articles")
+      .select("slug,title,published_at,tags")
+      .order("published_at", { ascending: false })
+      .limit(64),
+    getPopularTags(12),
+  ]);
 
   if (error) throw error;
 
@@ -128,19 +132,6 @@ export async function getSearchSuggestions(): Promise<{
     published_at: r.published_at,
     tags: r.tags,
   }));
-
-  const tagCounts = new Map<string, number>();
-  for (const r of rows) {
-    for (const t of r.tags ?? []) {
-      if (!t) continue;
-      tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
-    }
-  }
-
-  const popularTags = [...tagCounts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 12)
-    .map(([t]) => t);
 
   return { recent, popularTags };
 }

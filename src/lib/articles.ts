@@ -96,16 +96,24 @@ async function queryArticleBySlug<T>(
   return null;
 }
 
-export async function getArticles(cursor?: string): Promise<{
+export async function getArticles(
+  cursor?: string,
+  options?: { tag?: string },
+): Promise<{
   articles: ArticleListItem[];
   hasMore: boolean;
   nextCursor: string | null;
 }> {
+  const tag = options?.tag?.trim();
   let query = supabase
     .from("articles")
     .select(ARTICLE_LIST_COLUMNS)
     .order("published_at", { ascending: false })
     .limit(ARTICLES_PER_PAGE + 1);
+
+  if (tag) {
+    query = query.contains("tags", [tag]);
+  }
 
   if (cursor) {
     query = query.lt("published_at", cursor);
@@ -131,6 +139,20 @@ export async function getArticles(cursor?: string): Promise<{
         ? articles[articles.length - 1].published_at
         : null,
   };
+}
+
+/** Exact tag match count (array contains element). */
+export async function getArticleCountByTag(tag: string): Promise<number> {
+  const t = tag.trim();
+  if (!t) return 0;
+
+  const { count, error } = await supabase
+    .from("articles")
+    .select("*", { count: "exact", head: true })
+    .contains("tags", [t]);
+
+  if (error) throw error;
+  return count ?? 0;
 }
 
 export async function getArticleBySlug(
