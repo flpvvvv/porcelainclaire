@@ -83,13 +83,13 @@ const TIER_LAYOUT: Record<
   CloudTier,
   { fs: number; padX: number; padY: number; line: number }
 > = {
-  1: { fs: 11, padX: 11, padY: 8, line: 1.38 },
-  2: { fs: 12, padX: 12, padY: 8, line: 1.36 },
-  3: { fs: 13, padX: 13, padY: 9, line: 1.34 },
-  4: { fs: 15, padX: 14, padY: 10, line: 1.32 },
-  5: { fs: 17, padX: 15, padY: 10, line: 1.28 },
-  6: { fs: 20, padX: 17, padY: 11, line: 1.22 },
-  7: { fs: 24, padX: 19, padY: 12, line: 1.18 },
+  1: { fs: 12, padX: 14, padY: 10, line: 1.4 },
+  2: { fs: 13, padX: 16, padY: 10, line: 1.4 },
+  3: { fs: 14, padX: 18, padY: 12, line: 1.4 },
+  4: { fs: 16, padX: 20, padY: 14, line: 1.35 },
+  5: { fs: 18, padX: 22, padY: 16, line: 1.35 },
+  6: { fs: 22, padX: 26, padY: 18, line: 1.3 },
+  7: { fs: 28, padX: 30, padY: 22, line: 1.25 },
 };
 
 export function estimateChipSize(
@@ -104,11 +104,11 @@ export function estimateChipSize(
 }
 
 export const TAG_CLOUD_TIER_CLASSES: Record<CloudTier, string> = {
-  1: "px-2.5 py-2 text-[0.6875rem] leading-snug tracking-wide",
-  2: "px-2.5 py-2 text-[0.75rem] leading-snug",
-  3: "px-3 py-2 text-[0.8125rem] leading-snug sm:text-[0.84375rem]",
-  4: "px-3 py-2.5 text-sm font-medium leading-snug sm:text-[0.9375rem]",
-  5: "px-3.5 py-2.5 text-[0.9375rem] font-semibold leading-snug sm:text-base",
-  6: "px-4 py-3 text-base font-semibold leading-snug sm:text-lg",
-  7: "px-4 py-3.5 text-lg font-bold leading-tight sm:text-xl sm:py-4",
+  1: "px-3 py-2 text-[0.75rem] leading-snug tracking-widest",
+  2: "px-3.5 py-2 text-[0.8125rem] leading-snug tracking-wider",
+  3: "px-4 py-2.5 text-[0.875rem] leading-snug tracking-wider sm:text-[0.9375rem]",
+  4: "px-5 py-3 text-base font-medium leading-snug tracking-wide sm:text-[1.0625rem]",
+  5: "px-5 py-3.5 text-[1.125rem] font-medium leading-snug tracking-wide sm:text-xl",
+  6: "px-6 py-4 text-xl font-semibold leading-snug tracking-wide sm:text-2xl",
+  7: "px-7 py-5 text-2xl font-bold leading-tight tracking-wide sm:text-3xl sm:py-6",
 };
