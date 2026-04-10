@@ -211,8 +211,8 @@ summary:focus-visible {
   isolation: isolate;
 }
 
-.tag-cloud-link[data-tier="1"],
-.tag-cloud-link[data-tier="2"] {
+.tag-cloud-link[data-tier="1"]:not([data-active="true"]),
+.tag-cloud-link[data-tier="2"]:not([data-active="true"]) {
   color: color-mix(in srgb, var(--accent) 88%, var(--foreground-secondary));
 }
 
@@ -220,7 +220,10 @@ summary:focus-visible {
   z-index: 60 !important;
 }
 
-.tag-cloud-link--active {
+.tag-cloud-link.tag-cloud-link--active {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border-color: transparent;
   box-shadow:
     var(--float-shadow),
     0 0 0 1px color-mix(in srgb, var(--accent-foreground) 22%, transparent);
