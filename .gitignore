@@ -45,3 +45,6 @@ next-env.d.ts
 sync/.venv/
 __pycache__/
 *.pyc
+
+# Squirrel audit reports (generated)
+squirrel-report-*.llm.txt 

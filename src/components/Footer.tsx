@@ -46,6 +46,18 @@ export function Footer() {
               >
                 关于
               </Link>
+              <Link
+                href="/copyright"
+                className="text-sm text-foreground-secondary transition-colors hover:text-foreground"
+              >
+                版权声明
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-sm text-foreground-secondary transition-colors hover:text-foreground"
+              >
+                隐私政策
+              </Link>
               <a
                 href="#top"
                 className="text-sm text-foreground-secondary transition-colors hover:text-foreground"
@@ -73,13 +85,32 @@ export function Footer() {
 
           <div className="editorial-divider mt-10" />
 
-          <div className="mt-6 flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
-            <p className="text-xs tabular-nums text-foreground-tertiary">
-              &copy; {year} Porcelain Claire
+          <div className="mt-6 space-y-4 text-left">
+            <p className="text-xs leading-6 text-foreground-tertiary">
+              本站原创内容版权归 Porcelain Claire 所有，并保留所有权利。非商业转载须注明出处及原作者；商业用途未经授权严禁使用，合作或授权请
+              <a
+                href="mailto:contact@porcelainclaire.com"
+                className="text-foreground-secondary underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              >
+                邮件联系
+              </a>
+              。详见
+              <Link
+                href="/copyright"
+                className="text-foreground-secondary underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              >
+                版权声明
+              </Link>
+              。
             </p>
-            <p className="text-xs text-foreground-tertiary">
-              留一点安静，给值得慢慢读的文字。
-            </p>
+            <div className="flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+              <p className="text-xs tabular-nums text-foreground-tertiary">
+                &copy; {year} Porcelain Claire
+              </p>
+              <p className="text-xs text-foreground-tertiary">
+                留一点安静，给值得慢慢读的文字。
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -3,10 +3,24 @@ import Image from "next/image";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Logo } from "@/components/Logo";
+import { SITE_URL } from "@/lib/site";
+
+const ABOUT_DESCRIPTION =
+  "了解 Porcelain Claire（Claire）的个人博客：原创文字与生活记录，文章同步自微信公众号；本站提供更安静、更适合慢读的阅读方式。商业合作与转载授权请邮件联系。";
 
 export const metadata: Metadata = {
-  title: "关于",
-  description: "关于 Porcelain Claire",
+  title: "关于作者与这个空间 | Porcelain Claire",
+  description: ABOUT_DESCRIPTION,
+  alternates: { canonical: `${SITE_URL}/about` },
+  openGraph: {
+    title: "关于作者与这个空间 | Porcelain Claire",
+    description: ABOUT_DESCRIPTION,
+    url: `${SITE_URL}/about`,
+  },
+  twitter: {
+    title: "关于作者与这个空间 | Porcelain Claire",
+    description: ABOUT_DESCRIPTION,
+  },
 };
 
 export default function AboutPage() {
@@ -44,6 +58,16 @@ export default function AboutPage() {
                 <p>你好，我是 Claire。欢迎来到我的个人博客。</p>
                 <p>
                   这里是我记录生活、分享思考的地方。我希望页面本身也像文字一样，有留白、有温度、不急着催促你向下滑。
+                </p>
+                <p>
+                  本站所刊登的文字与图片均为原创或经授权使用；转载与商业使用请遵循
+                  <a
+                    href="/copyright"
+                    className="text-accent underline-offset-4 transition-colors hover:text-accent-hover hover:underline"
+                  >
+                    版权声明
+                  </a>
+                  ，如需授权欢迎来信。
                 </p>
                 <p>
                   如果你更习惯在微信里收藏、分享或互动，也可以通过下方入口继续阅读。

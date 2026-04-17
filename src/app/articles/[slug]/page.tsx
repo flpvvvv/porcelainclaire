@@ -3,6 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import sanitizeHtml from "sanitize-html";
+import {
+  articleCanonicalUrl,
+  formatArticleMetaTitle,
+  metaDescriptionFromSummary,
+} from "@/lib/seo";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ReadingProgress } from "@/components/ReadingProgress";
@@ -42,17 +47,34 @@ export async function generateMetadata({
   const article = await getCachedArticleBySlug(slug);
   if (!article) return {};
 
+  const canonical = articleCanonicalUrl(article.slug);
+  const description = metaDescriptionFromSummary(
+    article.summary,
+    article.title,
+  );
+  const title = formatArticleMetaTitle(article.title);
+  const ogImages = article.cover_image_url
+    ? [{ url: article.cover_image_url }]
+    : [{ url: "/opengraph-image" }];
+
   return {
-    title: article.title,
-    description: article.summary ?? undefined,
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
       title: article.title,
-      description: article.summary ?? undefined,
+      description,
       type: "article",
+      url: canonical,
       publishedTime: article.published_at,
-      images: article.cover_image_url
-        ? [{ url: article.cover_image_url }]
-        : undefined,
+      images: ogImages,
+      locale: "zh_CN",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description,
+      images: ogImages.map((i) => i.url),
     },
   };
 }
@@ -68,7 +90,7 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   ]),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    img: ["src", "alt", "width", "height", "loading", "class"],
+    img: ["src", "alt", "width", "height", "loading", "class", "referrerpolicy"],
     video: ["src", "controls", "poster", "width", "height"],
     source: ["src", "type"],
     "*": ["class", "style"],
@@ -96,13 +118,47 @@ export default async function ArticlePage({
 
   if (!article) notFound();
 
+  const pageUrl = articleCanonicalUrl(article.slug);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: article.title,
+    datePublished: article.published_at,
+    dateModified: article.updated_at,
+    author: { "@type": "Person", name: article.author },
+    publisher: {
+      "@type": "Organization",
+      name: "Porcelain Claire",
+      url: "https://porcelainclaire.com",
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+    ...(article.cover_image_url
+      ? { image: [article.cover_image_url] }
+      : {}),
+  };
+
   const cleanHtml = sanitizeHtml(article.content_html, sanitizeOptions);
-  const preparedArticle = prepareArticleHtml(cleanHtml, {
+  const bodyWithoutDuplicateH1 = cleanHtml
+    .replace(/<h1(\s[^>]*)?>/gi, "<h2$1>")
+    .replace(/<\/h1>/gi, "</h2>");
+  // Add referrerpolicy to img tags for WeChat CDN hotlinking protection
+  const withReferrerPolicy = bodyWithoutDuplicateH1.replace(
+    /<img(\s[^>]*)?>/gi,
+    (match, attrs) => {
+      if (/referrerpolicy=/i.test(attrs)) return match;
+      return `<img${attrs} referrerpolicy="no-referrer">`;
+    },
+  );
+  const preparedArticle = prepareArticleHtml(withReferrerPolicy, {
     suppressLeadingMedia: Boolean(article.cover_image_url),
   });
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
       <main id="main-content" className="flex-1 pt-[5.35rem] sm:pt-28">
         <article className="article-shell px-4 pb-24 sm:px-6 sm:pb-28 lg:px-8">

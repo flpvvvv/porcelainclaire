@@ -60,9 +60,11 @@ uv run sync backfill-tags --dry-run --limit 5 --order random --seed 42  # 随机
 |------|------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase 项目 URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 匿名密钥 |
-| `REVALIDATION_SECRET` | ISR 重新验证密钥（需与同步脚本使用的一致） |
+| `REVALIDATION_SECRET` | 服务端 `POST /api/revalidate` 密钥（需与同步脚本使用的一致；勿暴露到浏览器） |
 
 模板见根目录 [`.env.local.example`](./.env.local.example)。
+
+**ISR 重新验证**：同步脚本在设置了 `REVALIDATION_SECRET` 时会 `POST` 到 `{SITE_URL}/api/revalidate`。请求体为 JSON：`{"secret":"<REVALIDATION_SECRET>","slug":"<文章 slug 或省略>"}`（`slug` 为空时只刷新首页缓存）。也可使用请求头 `Authorization: Bearer <REVALIDATION_SECRET>`，或查询参数 `?secret=`（不推荐写入日志）。可选字段 `path` 可显式指定以 `/` 开头的路径。
 
 ### 同步脚本（shell 环境变量）
 

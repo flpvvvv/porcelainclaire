@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
 import { Suspense } from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleCard } from "@/components/ArticleCard";
@@ -14,6 +16,70 @@ import {
 import { getTagCloud } from "@/lib/tags";
 
 export const revalidate = 3600;
+
+const HOME_DESCRIPTION =
+  "Porcelain Claire（Claire）的个人博客：记录生活、瓷器文化与日常思考。文章同步自微信公众号，本站提供更安静、更适合慢读的排版与阅读体验。";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ cursor?: string; tag?: string }>;
+}): Promise<Metadata> {
+  const { cursor, tag } = await searchParams;
+
+  if (tag) {
+    const title = cursor
+      ? `标签「${tag}」· 更早的文章 | Porcelain Claire`
+      : `标签「${tag}」· 文章列表 | Porcelain Claire`;
+    const description = cursor
+      ? `按标签「${tag}」继续翻阅更早发布的文章。${HOME_DESCRIPTION}`
+      : `浏览 Porcelain Claire 博客中包含「${tag}」标签的文章列表。${HOME_DESCRIPTION}`;
+    const canonical = new URL("/", SITE_URL);
+    canonical.searchParams.set("tag", tag);
+    if (cursor) canonical.searchParams.set("cursor", cursor);
+    const d = description.length > 160 ? `${description.slice(0, 157)}…` : description;
+    return {
+      title,
+      description: d,
+      alternates: { canonical: canonical.toString() },
+      openGraph: {
+        title,
+        description: d,
+        url: canonical.toString(),
+      },
+      twitter: { title, description: d },
+    };
+  }
+
+  if (cursor) {
+    const title = "更早的文章 · 存档 | Porcelain Claire";
+    const description = `继续翻阅 Porcelain Claire 更早发布的文章。${HOME_DESCRIPTION}`;
+    const d = description.length > 160 ? `${description.slice(0, 157)}…` : description;
+    const canonical = `${SITE_URL}/?cursor=${encodeURIComponent(cursor)}`;
+    return {
+      title,
+      description: d,
+      alternates: { canonical },
+      openGraph: { title, description: d, url: canonical },
+      twitter: { title, description: d },
+    };
+  }
+
+  return {
+    title: "写给愿意慢慢读的人",
+    description: HOME_DESCRIPTION,
+    alternates: { canonical: SITE_URL },
+    openGraph: {
+      title: "Porcelain Claire — 写给愿意慢慢读的人",
+      description: HOME_DESCRIPTION,
+      url: SITE_URL,
+    },
+    twitter: {
+      title: "Porcelain Claire — 写给愿意慢慢读的人",
+      description: HOME_DESCRIPTION,
+    },
+  };
+}
 
 function ArticleListSkeleton({ uniform }: { uniform?: boolean }) {
   return (

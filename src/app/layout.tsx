@@ -4,24 +4,38 @@ import { PwaInstallProvider } from "@/components/PwaInstallProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
 
+const defaultDescription =
+  "Porcelain Claire（Claire）的个人博客：记录生活、瓷器文化与日常思考。文章同步自微信公众号，本站提供更安静、更适合慢读的阅读体验。";
+
 export const metadata: Metadata = {
   title: {
-    default: "Porcelain Claire",
-    template: "%s - Porcelain Claire",
+    default: "Porcelain Claire — 写给愿意慢慢读的人",
+    template: "%s",
   },
-  description: "Claire 的个人博客，分享生活与思考",
+  description: defaultDescription,
   metadataBase: new URL("https://porcelainclaire.com"),
   openGraph: {
     type: "website",
     locale: "zh_CN",
     siteName: "Porcelain Claire",
+    description: defaultDescription,
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Porcelain Claire",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Porcelain Claire — 写给愿意慢慢读的人",
+    description: defaultDescription,
   },
   robots: {
     index: true,
     follow: true,
-  },
-  other: {
-    referrer: "no-referrer",
   },
 };
 
