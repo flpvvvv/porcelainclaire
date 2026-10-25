@@ -84,13 +84,10 @@ export async function searchArticles(
     cover_image_url:
       row.cover_image_url != null ? String(row.cover_image_url) : null,
     published_at: String(row.published_at),
-    tags: Array.isArray(row.tags)
-      ? (row.tags as unknown[]).map(String)
-      : null,
+    tags: Array.isArray(row.tags) ? (row.tags as unknown[]).map(String) : null,
     reading_time_minutes: Number(row.reading_time_minutes) || 1,
     rank: Number(row.rank) || 0,
-    match_reason:
-      row.match_reason != null ? String(row.match_reason) : null,
+    match_reason: row.match_reason != null ? String(row.match_reason) : null,
     matched_tags: Array.isArray(row.matched_tags)
       ? (row.matched_tags as unknown[]).map(String)
       : [],

@@ -1,6 +1,6 @@
-import { revalidatePath } from "next/cache";
 import { timingSafeEqual } from "node:crypto";
-import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
+import { type NextRequest, NextResponse } from "next/server";
 
 function timingSafeEqualUtf8(a: string, b: string): boolean {
   const ba = Buffer.from(a, "utf8");
@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
   }
 
   const bodySecret = typeof body.secret === "string" ? body.secret : "";
-  const provided =
-    headerSecret ?? querySecret ?? bodySecret ?? "";
+  const provided = headerSecret ?? querySecret ?? bodySecret ?? "";
 
   if (!timingSafeEqualUtf8(provided, secret)) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

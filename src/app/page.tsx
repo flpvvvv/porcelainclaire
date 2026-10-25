@@ -1,18 +1,18 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { Suspense } from "react";
-import Link from "next/link";
-import type { Metadata } from "next";
-import { SITE_URL } from "@/lib/site";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { ArticleCard } from "@/components/ArticleCard";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { PwaInstallCallout } from "@/components/PwaInstallCallout";
 import { TagCloudSection } from "@/components/TagCloudSection";
 import {
+  type ArticleListItem,
   getArticleCountByTag,
   getArticles,
-  type ArticleListItem,
 } from "@/lib/articles";
+import { SITE_URL } from "@/lib/site";
 import { getTagCloud } from "@/lib/tags";
 
 export const revalidate = 3600;
@@ -37,7 +37,8 @@ export async function generateMetadata({
     const canonical = new URL("/", SITE_URL);
     canonical.searchParams.set("tag", tag);
     if (cursor) canonical.searchParams.set("cursor", cursor);
-    const d = description.length > 160 ? `${description.slice(0, 157)}…` : description;
+    const d =
+      description.length > 160 ? `${description.slice(0, 157)}…` : description;
     return {
       title,
       description: d,
@@ -54,7 +55,8 @@ export async function generateMetadata({
   if (cursor) {
     const title = "更早的文章 · 存档 | Porcelain Claire";
     const description = `继续翻阅 Porcelain Claire 更早发布的文章。${HOME_DESCRIPTION}`;
-    const d = description.length > 160 ? `${description.slice(0, 157)}…` : description;
+    const d =
+      description.length > 160 ? `${description.slice(0, 157)}…` : description;
     const canonical = `${SITE_URL}/?cursor=${encodeURIComponent(cursor)}`;
     return {
       title,
@@ -84,9 +86,9 @@ export async function generateMetadata({
 function ArticleListSkeleton({ uniform }: { uniform?: boolean }) {
   return (
     <div className="mt-8 grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-8">
-      {Array.from({ length: 6 }, (_, i) => (
+      {["hero", "b", "c", "d", "e", "f"].map((slot, i) => (
         <div
-          key={i}
+          key={slot}
           className={
             uniform || i !== 0
               ? "lg:col-span-5 xl:col-span-4"
@@ -182,9 +184,7 @@ async function ArticleList({
       {tag ? (
         <p className="mt-4 text-sm text-foreground-secondary">
           本页展示{" "}
-          <span className="font-medium text-foreground">
-            {articles.length}
-          </span>
+          <span className="font-medium text-foreground">{articles.length}</span>
           {totalCount != null && totalCount > articles.length
             ? ` / 共 ${totalCount} 篇`
             : totalCount != null && totalCount === articles.length

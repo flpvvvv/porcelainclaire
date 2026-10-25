@@ -2,7 +2,7 @@
 export const PWA_INSTALL_DISMISS_KEY = "pwa-install-dismissed-at";
 
 /** Hide callout again for this long after user dismisses (ms) */
-export const PWA_INSTALL_DISMISS_COOLDOWN_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
+const PWA_INSTALL_DISMISS_COOLDOWN_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export type BeforeInstallPromptEventLike = Event & {
   prompt: () => Promise<void>;
@@ -14,7 +14,9 @@ export function isIosLikeDevice(): boolean {
   const ua = navigator.userAgent;
   const iOS = /iPad|iPhone|iPod/.test(ua);
   const iPadOS =
-    ua.includes("Mac") && "maxTouchPoints" in navigator && navigator.maxTouchPoints > 1;
+    ua.includes("Mac") &&
+    "maxTouchPoints" in navigator &&
+    navigator.maxTouchPoints > 1;
   return iOS || iPadOS;
 }
 
@@ -31,7 +33,7 @@ export function isMobileViewport(): boolean {
   return window.matchMedia("(max-width: 48rem)").matches;
 }
 
-export function readDismissedAt(): number | null {
+function readDismissedAt(): number | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(PWA_INSTALL_DISMISS_KEY);

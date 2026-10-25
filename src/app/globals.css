@@ -68,11 +68,13 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC",
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Heiti SC",
     sans-serif;
-  --font-serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC",
-    Georgia, "Times New Roman", serif;
+  --font-serif:
+    "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", Georgia,
+    "Times New Roman", serif;
 }
 
 html {
@@ -230,7 +232,7 @@ summary:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tag-cloud-canvas [role="list"] {
+  .tag-cloud-canvas ul {
     transition: none !important;
   }
 }

@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { TagCloudItem } from "@/lib/tags";
 import {
+  type CloudLayoutPlaced,
   hashCloudSeed,
   layoutTagCloud,
-  type CloudLayoutPlaced,
 } from "@/lib/tag-cloud-layout";
 import {
   cloudCountBounds,
@@ -14,6 +13,7 @@ import {
   TAG_CLOUD_TIER_CLASSES,
   tierFromCount,
 } from "@/lib/tag-cloud-weights";
+import type { TagCloudItem } from "@/lib/tags";
 
 const TAG_GAP = 6;
 const MAX_TAGS_NARROW = 40;
@@ -152,14 +152,8 @@ function computeSoftRepulsionOffsets(
     const push = falloff * REPULSION_MAX_PUSH_PX;
     const rx = (vx / dist) * push;
     const ry = (vy / dist) * push;
-    const nx = Math.min(
-      Math.max(0, p.x + rx),
-      Math.max(0, cw - p.w),
-    );
-    const ny = Math.min(
-      Math.max(0, p.y + ry),
-      Math.max(0, ch - p.h),
-    );
+    const nx = Math.min(Math.max(0, p.x + rx), Math.max(0, cw - p.w));
+    const ny = Math.min(Math.max(0, p.y + ry), Math.max(0, ch - p.h));
     out[p.tag] = { x: nx - p.x, y: ny - p.y };
   }
   return out;
@@ -378,10 +372,18 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
     .map((i) => `${i.tag}:${i.articleCount}`)
     .join("\u001f");
 
+  // Keep the latest items available to the layout effect without making
+  // `items` a dependency; only a content change should trigger relayout.
+  const itemsRef = useRef(items);
+  useLayoutEffect(() => {
+    itemsRef.current = items;
+  });
+
   const canDragTag = (tag: string) =>
     activeTag == null || activeTag === "" || tag === activeTag;
 
   useLayoutEffect(() => {
+    const currentItems = itemsRef.current;
     const el = containerRef.current;
     if (!el) return;
 
@@ -391,12 +393,11 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
       const wB = Math.floor(cw / WIDTH_BUCKET);
       const hB = Math.floor(ch / HEIGHT_BUCKET);
       const breakpoint = cw < 640 ? "sm" : "md";
-      const itemSig = items.map((i) => `${i.tag}:${i.articleCount}`).join("|");
-      return `${itemSig}|${wB}|${hB}|${breakpoint}`;
+      return `${itemsContentSig}|${wB}|${hB}|${breakpoint}`;
     };
 
     const compute = () => {
-      if (items.length === 0) {
+      if (currentItems.length === 0) {
         lastKeyRef.current = "";
         setCanvasSize({ w: 0, h: 0 });
         setPlaced([]);
@@ -422,7 +423,7 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
       }
       setSettledTags([]);
 
-      const next = computeLayout(items, cw, ch);
+      const next = computeLayout(currentItems, cw, ch);
       lastKeyRef.current = key;
       layoutGenRef.current += 1;
       setPlaced(next);
@@ -436,7 +437,6 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
     });
     ro.observe(el);
     return () => ro.disconnect();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- itemsContentSig is stable across new filter() arrays; listing items would re-run every parent render and break drag (layoutGen).
   }, [itemsContentSig]);
 
   const repulsion = useMemo(() => {
@@ -524,7 +524,7 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
   const isDragSession = drag !== null;
 
   return (
-    <div
+    <section
       ref={containerRef}
       className={[
         "tag-cloud-canvas relative z-[1] h-[min(65vh,600px)] min-h-[400px] w-full touch-pan-y sm:min-h-[480px] sm:h-[min(65vh,700px)]",
@@ -532,7 +532,6 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
       ]
         .filter(Boolean)
         .join(" ")}
-      role="region"
       aria-label="主题标签云"
     >
       <style>{`
@@ -648,12 +647,17 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,var(--accent-soft)_0%,transparent_65%)] opacity-60" />
         {/* Add some subtle noise texture */}
-        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
+        <div
+          className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+          }}
+        ></div>
       </div>
 
-      <div
-        className="relative h-full w-full overflow-hidden"
-        role="list"
+      <ul
+        className="relative h-full w-full list-none overflow-hidden"
         style={{
           opacity: placed && placed.length > 0 ? 1 : 0,
           transition: "opacity 400ms ease",
@@ -668,14 +672,12 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
           const isDragged = drag?.tag === p.tag;
           const isSettled = settledTags.includes(p.tag);
           const isDimmed =
-            spotlightTag !== null &&
-            p.tag !== spotlightTag &&
-            !isActive;
+            spotlightTag !== null && p.tag !== spotlightTag && !isActive;
           const href = isActive ? "/" : `/?tag=${encodeURIComponent(p.tag)}`;
           const draggable = canDragTag(p.tag);
           const rep = repulsion[p.tag];
-          const ox = isDragged ? drag!.dx : (rep?.x ?? 0);
-          const oy = isDragged ? drag!.dy : (rep?.y ?? 0);
+          const ox = isDragged ? (drag?.dx ?? 0) : (rep?.x ?? 0);
+          const oy = isDragged ? (drag?.dy ?? 0) : (rep?.y ?? 0);
 
           // Generate deterministic random values based on index
           const rand = Math.sin(i * 1234.5) * 10000;
@@ -684,7 +686,7 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
           const animDelay = randVal * -4; // 0 to -4s
 
           return (
-            <div
+            <li
               key={p.tag}
               className={[
                 "tag-cloud-item-wrapper",
@@ -713,7 +715,6 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
                   scroll={false}
                   draggable={false}
                   onDragStart={(e) => e.preventDefault()}
-                  role="listitem"
                   data-tier={p.tier}
                   data-active={isActive ? "true" : undefined}
                   aria-current={isActive ? "page" : undefined}
@@ -782,15 +783,11 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
                     const rawX = localX - s.grabX;
                     const rawY = localY - s.grabY;
                     const dx =
-                      Math.min(
-                        Math.max(0, rawX),
-                        Math.max(0, cw - chip.w),
-                      ) - chip.x;
+                      Math.min(Math.max(0, rawX), Math.max(0, cw - chip.w)) -
+                      chip.x;
                     const dy =
-                      Math.min(
-                        Math.max(0, rawY),
-                        Math.max(0, ch - chip.h),
-                      ) - chip.y;
+                      Math.min(Math.max(0, rawY), Math.max(0, ch - chip.h)) -
+                      chip.y;
                     setDrag({ tag: s.tag, dx, dy });
                   }}
                   onPointerUp={(e) => {
@@ -822,16 +819,16 @@ export function MagneticTagCloud({ items, activeTag }: MagneticTagCloudProps) {
                   <span className="break-words">{p.tag}</span>
                 </Link>
               </div>
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
 
       {!placed || placed.length === 0 ? (
         <span className="sr-only" aria-live="polite">
           标签云布局中
         </span>
       ) : null}
-    </div>
+    </section>
   );
 }

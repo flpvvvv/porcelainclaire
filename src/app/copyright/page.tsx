@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { SITE_URL } from "@/lib/site";
 
 const DESCRIPTION =
@@ -53,8 +53,8 @@ export default function CopyrightPage() {
                 非商业转载
               </h2>
               <p>
-                非商业转载必须注明出处及原作者（Porcelain Claire
-                / Claire），并不得对正文作歪曲、篡改或删减。
+                非商业转载必须注明出处及原作者（Porcelain Claire /
+                Claire），并不得对正文作歪曲、篡改或删减。
               </p>
             </section>
 

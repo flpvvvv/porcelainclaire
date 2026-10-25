@@ -33,15 +33,7 @@ type PwaInstallContextValue = {
 
 const PwaInstallContext = createContext<PwaInstallContextValue | null>(null);
 
-export function usePwaInstall(): PwaInstallContextValue {
-  const ctx = useContext(PwaInstallContext);
-  if (!ctx) {
-    throw new Error("usePwaInstall must be used within PwaInstallProvider");
-  }
-  return ctx;
-}
-
-/** Optional: use when callout may render outside strict tree (defensive). */
+/** Optional: the callout may render outside the provider tree. */
 export function usePwaInstallOptional(): PwaInstallContextValue | null {
   return useContext(PwaInstallContext);
 }
@@ -104,10 +96,7 @@ export function PwaInstallProvider({
 
   const dismissCallout = useCallback(() => {
     try {
-      window.localStorage.setItem(
-        PWA_INSTALL_DISMISS_KEY,
-        String(Date.now()),
-      );
+      window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
     } catch {
       /* ignore */
     }

@@ -34,8 +34,7 @@ export function metaDescriptionFromSummary(
   summary: string | null | undefined,
   articleTitle: string,
 ): string {
-  const fallback =
-    `「${articleTitle}」收录于 Porcelain Claire 个人博客：记录生活与瓷器文化相关的阅读与思考；文章同步自微信公众号，本站提供更安静、更适合慢读的排版与体验。转载请注明出处。`;
+  const fallback = `「${articleTitle}」收录于 Porcelain Claire 个人博客：记录生活与瓷器文化相关的阅读与思考；文章同步自微信公众号，本站提供更安静、更适合慢读的排版与体验。转载请注明出处。`;
   let text = (summary?.trim() || fallback).replace(/\s+/g, " ");
 
   if (text.length < 120) {

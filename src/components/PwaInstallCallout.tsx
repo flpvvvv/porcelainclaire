@@ -50,17 +50,18 @@ export function PwaInstallCallout({ layout = "full" }: PwaInstallCalloutProps) {
   if (!pwa?.ready || !pwa.showInstallCallout) return null;
 
   const sheet = iosSheetOpen && pwa.variant === "ios" && (
-    <div
-      className="reader-sheet"
-      role="presentation"
-      onClick={() => setIosSheetOpen(false)}
-    >
+    <div className="reader-sheet">
+      <button
+        type="button"
+        className="absolute inset-0 h-full w-full cursor-default"
+        aria-label="关闭"
+        onClick={() => setIosSheetOpen(false)}
+      />
       <div
-        className="reader-sheet-panel max-h-[min(85vh,28rem)] pwa-install-sheet-panel"
+        className="reader-sheet-panel relative max-h-[min(85vh,28rem)] pwa-install-sheet-panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby="pwa-install-sheet-title"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="sticky top-0 z-10 border-b border-border/70 bg-surface/95 px-5 py-4 backdrop-blur-sm">
           <div className="flex items-start justify-between gap-4">
@@ -92,10 +93,7 @@ export function PwaInstallCallout({ layout = "full" }: PwaInstallCalloutProps) {
             </li>
             <li>
               选择
-              <span className="font-medium text-foreground">
-                {" "}
-                添加到主屏幕
-              </span>
+              <span className="font-medium text-foreground"> 添加到主屏幕</span>
               ，然后确认添加。
             </li>
           </ol>
@@ -142,7 +140,8 @@ export function PwaInstallCallout({ layout = "full" }: PwaInstallCalloutProps) {
             <div className="min-w-0 flex-1">
               <p className="section-kicker">在手机上阅读</p>
               <p className="mt-3 text-sm leading-7 text-foreground-secondary">
-                把 Porcelain Claire 放到手机主屏，下次可以像打开一本书一样回来，界面更干净、少打扰。
+                把 Porcelain Claire
+                放到手机主屏，下次可以像打开一本书一样回来，界面更干净、少打扰。
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-col sm:items-stretch">

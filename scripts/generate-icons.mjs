@@ -21,4 +21,6 @@ await rasterize(192, "icon-192.png");
 await rasterize(512, "icon-512.png");
 await rasterize(180, "apple-touch-icon.png");
 
-console.log("Wrote icon-192.png, icon-512.png, apple-touch-icon.png from favicon.svg");
+console.log(
+  "Wrote icon-192.png, icon-512.png, apple-touch-icon.png from favicon.svg",
+);

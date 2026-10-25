@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { ArticleSearchResult } from "@/lib/article-search";
 import { formatDate } from "@/lib/articles";
@@ -31,9 +25,7 @@ const DEBOUNCE_MS = 280;
 
 function shouldRunSearch(trimmed: string): boolean {
   if (trimmed.length === 0) return false;
-  const hasHashOrTag =
-    /#./.test(trimmed) ||
-    /\btag:/i.test(trimmed);
+  const hasHashOrTag = /#./.test(trimmed) || /\btag:/i.test(trimmed);
   if (hasHashOrTag) return true;
   return trimmed.length >= 2;
 }
@@ -159,9 +151,14 @@ export function ArticleSearchDialog({
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelected((i) => (i <= 0 ? results.length - 1 : i - 1));
-    } else if (e.key === "Enter" && selected >= 0 && selected < results.length) {
+    } else if (
+      e.key === "Enter" &&
+      selected >= 0 &&
+      selected < results.length
+    ) {
       e.preventDefault();
-      window.location.href = resultTargets[selected]!;
+      const target = resultTargets[selected];
+      if (target) window.location.href = target;
     }
   };
 
@@ -178,17 +175,18 @@ export function ArticleSearchDialog({
 
   // Portal to body so stacking is not capped by Header (z-40). Reader chrome uses z-index up to 70 in globals.css.
   const overlay = (
-    <div
-      className="fixed inset-0 z-[100] flex items-start justify-center bg-foreground/40 p-0 backdrop-blur-sm sm:p-4 sm:pt-[12vh]"
-      role="presentation"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-foreground/40 p-0 backdrop-blur-sm sm:p-4 sm:pt-[12vh]">
+      <button
+        type="button"
+        className="absolute inset-0 h-full w-full cursor-default"
+        aria-label="关闭搜索"
+        onClick={onClose}
+      />
       <div
-        className="flex h-[100dvh] w-full flex-col overflow-hidden bg-surface/95 shadow-[var(--float-shadow)] sm:h-auto sm:max-h-[min(75vh,40rem)] sm:max-w-2xl sm:rounded-[1.5rem] sm:border sm:border-border/80"
+        className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-surface/95 shadow-[var(--float-shadow)] sm:h-auto sm:max-h-[min(75vh,40rem)] sm:max-w-2xl sm:rounded-[1.5rem] sm:border sm:border-border/80"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        onClick={(e) => e.stopPropagation()}
         onKeyDown={onResultKeyDown}
       >
         <div className="shrink-0 border-b border-border/60 bg-surface/95 px-3 sm:px-4">
@@ -226,7 +224,9 @@ export function ArticleSearchDialog({
               取消
             </button>
             <div className="hidden shrink-0 items-center gap-1 text-[0.7rem] text-foreground-tertiary sm:flex">
-              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">ESC</kbd>
+              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">
+                ESC
+              </kbd>
             </div>
           </div>
         </div>
@@ -258,9 +258,14 @@ export function ArticleSearchDialog({
             )}
 
           {!loading && !error && results.length > 0 && (
-            <ul className="space-y-1" role="listbox" aria-label="搜索结果">
+            <div className="space-y-1" role="listbox" aria-label="搜索结果">
               {results.map((r, i) => (
-                <li key={r.id} role="option" aria-selected={i === selected}>
+                <div
+                  key={r.id}
+                  role="option"
+                  tabIndex={-1}
+                  aria-selected={i === selected}
+                >
                   <Link
                     href={`/articles/${encodeURIComponent(r.slug)}`}
                     onClick={onClose}
@@ -284,10 +289,7 @@ export function ArticleSearchDialog({
                       </span>
                     </div>
                     {r.matched_tags.length > 0 && (
-                      <div
-                        className="mt-2 flex flex-wrap gap-1"
-                        aria-label="匹配标签"
-                      >
+                      <div className="mt-2 flex flex-wrap gap-1">
                         {r.matched_tags.map((t) => (
                           <span key={t} className="tag-compact">
                             {t}
@@ -304,9 +306,9 @@ export function ArticleSearchDialog({
                       </p>
                     )}
                   </Link>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
 
           {!loading &&
@@ -356,17 +358,24 @@ export function ArticleSearchDialog({
         <div className="hidden shrink-0 items-center justify-between border-t border-border/60 bg-surface-muted/30 px-4 py-3 sm:flex">
           <div className="flex items-center gap-4 text-[0.7rem] text-foreground-tertiary">
             <span className="flex items-center gap-1.5">
-              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">↑</kbd>
-              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">↓</kbd>
+              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">
+                ↑
+              </kbd>
+              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">
+                ↓
+              </kbd>
               <span>选择</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">Enter</kbd>
+              <kbd className="rounded border border-border/60 bg-surface-muted/50 px-1.5 py-0.5 font-sans">
+                Enter
+              </kbd>
               <span>打开</span>
             </span>
           </div>
           <div className="text-[0.7rem] text-foreground-tertiary">
-            支持 <span className="text-foreground-secondary">#标签</span> 或 <span className="text-foreground-secondary">“短语”</span>
+            支持 <span className="text-foreground-secondary">#标签</span> 或{" "}
+            <span className="text-foreground-secondary">“短语”</span>
           </div>
         </div>
       </div>

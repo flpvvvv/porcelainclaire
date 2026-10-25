@@ -12,7 +12,7 @@ export function filterTagCloudItems(items: TagCloudItem[]): TagCloudItem[] {
   const sorted = [...items].sort(
     (a, b) => b.articleCount - a.articleCount || a.tag.localeCompare(b.tag),
   );
-  const maxCount = sorted[0]!.articleCount;
+  const maxCount = sorted[0]?.articleCount ?? 0;
   if (maxCount <= 0) return sorted;
 
   const tryThreshold = (share: number) =>
@@ -51,20 +51,15 @@ const ln1p = (n: number) => Math.log1p(Math.max(0, n));
  * Normalized strength in [0, 1] using log counts and a gamma curve so
  * top tags pull visibly away from the long tail.
  */
-export function tagStrength(
-  count: number,
-  minC: number,
-  maxC: number,
-): number {
+function tagStrength(count: number, minC: number, maxC: number): number {
   if (maxC <= minC) return 0.5;
-  const t =
-    (ln1p(count) - ln1p(minC)) / (ln1p(maxC) - ln1p(minC) || 1);
+  const t = (ln1p(count) - ln1p(minC)) / (ln1p(maxC) - ln1p(minC) || 1);
   const clamped = Math.min(1, Math.max(0, t));
   const gamma = 0.55;
-  return Math.min(1, Math.max(0, Math.pow(clamped, gamma)));
+  return Math.min(1, Math.max(0, clamped ** gamma));
 }
 
-export function strengthToTier(s: number): CloudTier {
+function strengthToTier(s: number): CloudTier {
   const n = 7;
   const idx = Math.min(n - 1, Math.floor(s * n));
   return (idx + 1) as CloudTier;

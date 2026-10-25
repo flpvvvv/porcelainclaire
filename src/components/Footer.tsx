@@ -87,7 +87,8 @@ export function Footer() {
 
           <div className="mt-6 space-y-4 text-left">
             <p className="text-xs leading-6 text-foreground-tertiary">
-              本站原创内容版权归 Porcelain Claire 所有，并保留所有权利。非商业转载须注明出处及原作者；商业用途未经授权严禁使用，合作或授权请
+              本站原创内容版权归 Porcelain Claire
+              所有，并保留所有权利。非商业转载须注明出处及原作者；商业用途未经授权严禁使用，合作或授权请
               <a
                 href="mailto:contact@porcelainclaire.com"
                 className="text-foreground-secondary underline-offset-4 transition-colors hover:text-foreground hover:underline"

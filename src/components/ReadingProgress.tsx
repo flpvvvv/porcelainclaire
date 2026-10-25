@@ -180,7 +180,9 @@ export function ReadingProgress({
       <button
         type="button"
         className={`desktop-back-top fixed bottom-6 right-6 z-[64] hidden lg:inline-flex ${
-          showChrome && progress > 8 ? "opacity-100" : "pointer-events-none opacity-0"
+          showChrome && progress > 8
+            ? "opacity-100"
+            : "pointer-events-none opacity-0"
         }`}
         onClick={scrollToTop}
         aria-label="返回顶部"
@@ -192,17 +194,18 @@ export function ReadingProgress({
       </button>
 
       {outlineOpen && headings.length > 0 && (
-        <div
-          className="reader-sheet lg:hidden"
-          role="presentation"
-          onClick={() => setOutlineOpen(false)}
-        >
+        <div className="reader-sheet lg:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 h-full w-full cursor-default"
+            aria-label="关闭目录"
+            onClick={() => setOutlineOpen(false)}
+          />
           <div
-            className="reader-sheet-panel"
+            className="reader-sheet-panel relative"
             role="dialog"
             aria-modal="true"
             aria-labelledby="reader-outline-title"
-            onClick={(event) => event.stopPropagation()}
           >
             <div className="sticky top-0 z-10 border-b border-border/70 bg-surface/95 px-5 py-4 backdrop-blur-sm">
               <div className="flex items-start justify-between gap-4">

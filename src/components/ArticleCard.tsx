@@ -103,9 +103,9 @@ export function ArticleCard({
           </span>
         </div>
         {article.tags && article.tags.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5" aria-label="文章标签">
-            {article.tags.slice(0, 3).map((tag, idx) => (
-              <span key={`${tag}-${idx}`} className="tag-compact">
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {article.tags.slice(0, 3).map((tag) => (
+              <span key={tag} className="tag-compact">
                 {tag}
               </span>
             ))}

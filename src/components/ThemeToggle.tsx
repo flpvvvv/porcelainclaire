@@ -18,6 +18,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <button
+        type="button"
         className="h-11 w-11 shrink-0 rounded-full border border-border/70 bg-surface/80 @min-[380px]:min-w-[4.25rem] @min-[380px]:px-3"
         aria-label="切换主题"
         disabled
@@ -29,6 +30,7 @@ export function ThemeToggle() {
 
   return (
     <button
+      type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className="group inline-flex h-11 w-11 shrink-0 items-center justify-center gap-0 rounded-full border border-border/70 bg-surface/85 text-foreground-secondary shadow-[var(--card-shadow)] transition-[border-color,background-color,color,transform] duration-200 hover:border-border-strong hover:bg-accent-soft hover:text-foreground active:scale-[0.98] @min-[380px]:w-auto @min-[380px]:gap-1.5 @min-[380px]:px-3"
       aria-label={isDark ? "切换到浅色模式" : "切换到深色模式"}

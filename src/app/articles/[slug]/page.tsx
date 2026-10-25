@@ -1,28 +1,28 @@
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import sanitizeHtml from "sanitize-html";
-import {
-  articleCanonicalUrl,
-  formatArticleMetaTitle,
-  metaDescriptionFromSummary,
-} from "@/lib/seo";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { PwaInstallCallout } from "@/components/PwaInstallCallout";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { WeChatButton } from "@/components/WeChatButton";
-import { PwaInstallCallout } from "@/components/PwaInstallCallout";
 import {
-  getCachedArticleBySlug,
-  getAllSlugs,
   formatDate,
+  getAllSlugs,
+  getCachedArticleBySlug,
 } from "@/lib/articles";
 import {
   formatCharacterCount,
   formatReadingTime,
   prepareArticleHtml,
 } from "@/lib/reading";
+import {
+  articleCanonicalUrl,
+  formatArticleMetaTitle,
+  metaDescriptionFromSummary,
+} from "@/lib/seo";
 
 export const revalidate = 86400;
 export const maxDuration = 60;
@@ -90,7 +90,15 @@ const sanitizeOptions: sanitizeHtml.IOptions = {
   ]),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    img: ["src", "alt", "width", "height", "loading", "class", "referrerpolicy"],
+    img: [
+      "src",
+      "alt",
+      "width",
+      "height",
+      "loading",
+      "class",
+      "referrerpolicy",
+    ],
     video: ["src", "controls", "poster", "width", "height"],
     source: ["src", "type"],
     "*": ["class", "style"],
@@ -132,9 +140,7 @@ export default async function ArticlePage({
       url: "https://porcelainclaire.com",
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
-    ...(article.cover_image_url
-      ? { image: [article.cover_image_url] }
-      : {}),
+    ...(article.cover_image_url ? { image: [article.cover_image_url] } : {}),
   };
 
   const cleanHtml = sanitizeHtml(article.content_html, sanitizeOptions);
@@ -157,6 +163,7 @@ export default async function ArticlePage({
     <>
       <script
         type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: static JSON-LD serialized via JSON.stringify
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Header />
@@ -263,9 +270,9 @@ export default async function ArticlePage({
                 {article.tags && article.tags.length > 0 && (
                   <div className="mt-5">
                     <p className="section-kicker mb-3">主题标签</p>
-                    <div className="flex flex-wrap gap-2" aria-label="文章标签">
-                      {article.tags.map((tag, idx) => (
-                        <span key={`${tag}-${idx}`} className="soft-pill">
+                    <div className="flex flex-wrap gap-2">
+                      {article.tags.map((tag) => (
+                        <span key={tag} className="soft-pill">
                           {tag}
                         </span>
                       ))}
@@ -292,6 +299,7 @@ export default async function ArticlePage({
               <div className="article-reading-panel mt-6 px-5 py-6 sm:px-8 sm:py-8">
                 <div
                   className="article-content"
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: article HTML is sanitized with sanitize-html above
                   dangerouslySetInnerHTML={{ __html: preparedArticle.html }}
                 />
               </div>

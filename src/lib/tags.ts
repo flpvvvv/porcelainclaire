@@ -14,10 +14,7 @@ const MAX_CLOUD_LIMIT = 200;
 export async function getTagCloud(
   limit = DEFAULT_CLOUD_LIMIT,
 ): Promise<TagCloudItem[]> {
-  const lim = Math.min(
-    Math.max(limit, 1),
-    MAX_CLOUD_LIMIT,
-  );
+  const lim = Math.min(Math.max(limit, 1), MAX_CLOUD_LIMIT);
 
   const { data, error } = await supabase.rpc("get_tag_cloud", {
     result_limit: lim,
@@ -25,7 +22,10 @@ export async function getTagCloud(
 
   if (error) throw error;
 
-  const rows = (data ?? []) as { tag: string; article_count: number | string }[];
+  const rows = (data ?? []) as {
+    tag: string;
+    article_count: number | string;
+  }[];
 
   return rows.map((row) => ({
     tag: row.tag,

@@ -257,7 +257,7 @@ function ensureIdAttribute(attributes: string, id: string): string {
   return `${attributes} id="${id}"`;
 }
 
-export function extractHeadingsFromHtml(html: string): ArticleHeading[] {
+function extractHeadingsFromHtml(html: string): ArticleHeading[] {
   const headings: ArticleHeading[] = [];
   const seen = new Map<string, number>();
 
@@ -281,10 +281,7 @@ export function extractHeadingsFromHtml(html: string): ArticleHeading[] {
   return headings;
 }
 
-export function enhanceArticleHtml(
-  html: string,
-  headings: ArticleHeading[],
-): string {
+function enhanceArticleHtml(html: string, headings: ArticleHeading[]): string {
   let headingIndex = 0;
 
   const withHeadingIds = html.replace(

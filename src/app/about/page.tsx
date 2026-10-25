@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { Logo } from "@/components/Logo";
 import { SITE_URL } from "@/lib/site";
 
@@ -41,7 +41,8 @@ export default function AboutPage() {
               一个适合慢慢读、慢慢想的个人空间
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-foreground-secondary sm:text-[1.05rem]">
-              这里收纳 Claire 对生活与日常的记录。文章同步自微信公众号，而网站保留一种更轻一些、更安静一些的阅读方式。
+              这里收纳 Claire
+              对生活与日常的记录。文章同步自微信公众号，而网站保留一种更轻一些、更安静一些的阅读方式。
             </p>
             <div className="mt-10 max-w-sm">
               <div className="editorial-divider" aria-hidden="true" />

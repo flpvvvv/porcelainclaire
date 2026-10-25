@@ -95,7 +95,10 @@ export function layoutTagCloud(
     const maxY = Math.max(0, ch - h);
     let best: { x: number; y: number } | null = null;
 
-    const attempts = Math.min(2400, Math.ceil((cw * ch) / Math.max(360, w * h)));
+    const attempts = Math.min(
+      2400,
+      Math.ceil((cw * ch) / Math.max(360, w * h)),
+    );
 
     for (let i = 0; i < attempts; i++) {
       const t = (i + 1) / attempts;

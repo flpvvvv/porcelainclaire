@@ -1,6 +1,6 @@
 import { cache } from "react";
-import { supabase } from "./supabase";
 import { estimateReadingStatsFromHtml } from "./reading";
+import { supabase } from "./supabase";
 
 export interface Article {
   id: string;
@@ -16,11 +16,6 @@ export interface Article {
   created_at: string;
   updated_at: string;
 }
-
-export type ArticleMetadata = Pick<
-  Article,
-  "slug" | "title" | "summary" | "cover_image_url" | "published_at"
->;
 
 export type ArticleListItem = Pick<
   Article,
@@ -48,8 +43,6 @@ type ArticleListRow = Pick<
 >;
 
 const ARTICLES_PER_PAGE = 12;
-const ARTICLE_METADATA_COLUMNS =
-  "slug,title,summary,cover_image_url,published_at";
 const ARTICLE_LIST_COLUMNS =
   "id,slug,title,summary,content_html,cover_image_url,published_at,tags";
 
@@ -84,8 +77,8 @@ async function queryArticleBySlug<T>(
   const candidates = getArticleSlugCandidates(slug);
   const results = await Promise.all(
     candidates.map((c) =>
-      supabase.from("articles").select(columns).eq("slug", c).maybeSingle()
-    )
+      supabase.from("articles").select(columns).eq("slug", c).maybeSingle(),
+    ),
   );
 
   for (const { data, error } of results) {
@@ -155,19 +148,9 @@ export async function getArticleCountByTag(tag: string): Promise<number> {
   return count ?? 0;
 }
 
-export async function getArticleBySlug(
-  slug: string,
-): Promise<Article | null> {
-  return queryArticleBySlug<Article>(slug);
-}
-
-export const getCachedArticleBySlug = cache(getArticleBySlug);
-
-export async function getArticleMetadataBySlug(
-  slug: string,
-): Promise<ArticleMetadata | null> {
-  return queryArticleBySlug<ArticleMetadata>(slug, ARTICLE_METADATA_COLUMNS);
-}
+export const getCachedArticleBySlug = cache((slug: string) =>
+  queryArticleBySlug<Article>(slug),
+);
 
 export async function getAllSlugs(): Promise<string[]> {
   const { data, error } = await supabase

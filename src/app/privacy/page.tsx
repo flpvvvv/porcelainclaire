@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { SITE_URL } from "@/lib/site";
 
 const DESCRIPTION =
@@ -42,7 +42,10 @@ export default function PrivacyPage() {
           <div className="editorial-card mt-10 space-y-8 rounded-[1.8rem] p-6 sm:p-8">
             <section className="space-y-3 text-[0.98rem] leading-8 text-foreground-secondary">
               <p>
-                本站（<strong className="text-foreground">porcelainclaire.com</strong>）由 Porcelain Claire 运营。我们尊重您的隐私，并承诺保护您在本站访问时提供的个人信息。
+                本站（
+                <strong className="text-foreground">porcelainclaire.com</strong>
+                ）由 Porcelain Claire
+                运营。我们尊重您的隐私，并承诺保护您在本站访问时提供的个人信息。
               </p>
             </section>
 
@@ -63,10 +66,14 @@ export default function PrivacyPage() {
                 Cookie 使用
               </h2>
               <p>
-                本站仅使用 Cookie 记录您的<strong className="text-foreground">主题偏好</strong>（深色或浅色模式）。该 Cookie 仅用于改善阅读体验，不涉及任何追踪、广告或第三方数据共享。
+                本站仅使用 Cookie 记录您的
+                <strong className="text-foreground">主题偏好</strong>
+                （深色或浅色模式）。该 Cookie
+                仅用于改善阅读体验，不涉及任何追踪、广告或第三方数据共享。
               </p>
               <p>
-                您可以在浏览器中清除或禁用 Cookie，这不会影响文章阅读功能，仅会影响主题自动切换。
+                您可以在浏览器中清除或禁用
+                Cookie，这不会影响文章阅读功能，仅会影响主题自动切换。
               </p>
             </section>
 
@@ -77,10 +84,12 @@ export default function PrivacyPage() {
               <p>本站使用以下第三方服务托管内容与运营网站：</p>
               <ul className="mt-3 space-y-2 pl-4">
                 <li>
-                  <strong className="text-foreground">Supabase</strong>：用于存储文章内容与图片素材。
+                  <strong className="text-foreground">Supabase</strong>
+                  ：用于存储文章内容与图片素材。
                 </li>
                 <li>
-                  <strong className="text-foreground">Vercel</strong>：用于网站托管与部署。
+                  <strong className="text-foreground">Vercel</strong>
+                  ：用于网站托管与部署。
                 </li>
               </ul>
               <p className="mt-3">

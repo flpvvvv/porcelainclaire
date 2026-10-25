@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { PwaInstallProvider } from "@/components/PwaInstallProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const defaultDescription =
@@ -54,11 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="zh-CN"
-      suppressHydrationWarning
-      data-scroll-behavior="smooth"
-    >
+    <html lang="zh-CN" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />

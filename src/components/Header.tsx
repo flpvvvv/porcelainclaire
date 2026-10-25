@@ -154,8 +154,8 @@ export function Header() {
               </Link>
               <ThemeToggle />
             </nav>
+          </div>
         </div>
-      </div>
       </div>
       <ArticleSearchDialog
         open={searchOpen}

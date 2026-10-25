@@ -13,11 +13,11 @@
 
 ## 项目结构（简要）
 
-| 路径 | 说明 |
-|------|------|
-| `app/` | Next.js 应用与路由 |
-| `sync/` | 微信文章同步 CLI |
-| `supabase/migrations/` | 数据库迁移 SQL |
+| 路径                   | 说明               |
+| ---------------------- | ------------------ |
+| `app/`                 | Next.js 应用与路由 |
+| `sync/`                | 微信文章同步 CLI   |
+| `supabase/migrations/` | 数据库迁移 SQL     |
 
 ## 本地开发
 
@@ -56,11 +56,11 @@ uv run sync backfill-tags --dry-run --limit 5 --order random --seed 42  # 随机
 
 ### 前端 / Vercel（`.env.local` 与线上）
 
-| 变量 | 说明 |
-|------|------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 项目 URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 匿名密钥 |
-| `REVALIDATION_SECRET` | 服务端 `POST /api/revalidate` 密钥（需与同步脚本使用的一致；勿暴露到浏览器） |
+| 变量                            | 说明                                                                         |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase 项目 URL                                                            |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 匿名密钥                                                            |
+| `REVALIDATION_SECRET`           | 服务端 `POST /api/revalidate` 密钥（需与同步脚本使用的一致；勿暴露到浏览器） |
 
 模板见根目录 [`.env.local.example`](./.env.local.example)。
 
@@ -68,13 +68,13 @@ uv run sync backfill-tags --dry-run --limit 5 --order random --seed 42  # 随机
 
 ### 同步脚本（shell 环境变量）
 
-| 变量 | 说明 |
-|------|------|
-| `SUPABASE_URL` | Supabase 项目 URL |
-| `SUPABASE_SERVICE_KEY` | 服务角色密钥（仅用于同步，勿暴露到浏览器） |
-| `REVALIDATION_SECRET` | 可选；设置后导入完成会请求 `/api/revalidate` |
-| `SITE_URL` | 可选；重新验证时的站点根 URL，默认 `https://porcelainclaire.com` |
-| `GEMINI_API_KEY` | 可选；未设置时导入成功但 `tags` 为空。GitHub Actions 同步需在仓库 Secrets 中配置 |
+| 变量                   | 说明                                                                             |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `SUPABASE_URL`         | Supabase 项目 URL                                                                |
+| `SUPABASE_SERVICE_KEY` | 服务角色密钥（仅用于同步，勿暴露到浏览器）                                       |
+| `REVALIDATION_SECRET`  | 可选；设置后导入完成会请求 `/api/revalidate`                                     |
+| `SITE_URL`             | 可选；重新验证时的站点根 URL，默认 `https://porcelainclaire.com`                 |
+| `GEMINI_API_KEY`       | 可选；未设置时导入成功但 `tags` 为空。GitHub Actions 同步需在仓库 Secrets 中配置 |
 
 ## 部署
 
