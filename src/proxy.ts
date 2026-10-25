@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 /** Legacy slugs used "-"; those URLs 500 on Vercel. Canonical slugs omit ASCII hyphens. */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   if (!pathname.startsWith("/articles/")) {
     return NextResponse.next();
