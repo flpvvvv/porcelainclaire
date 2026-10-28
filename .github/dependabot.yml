@@ -7,6 +7,11 @@ updates:
       day: "sunday"
       time: "02:00"
       timezone: "UTC"
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
 
   - package-ecosystem: "uv"
     directory: "/sync"
@@ -15,3 +20,8 @@ updates:
       day: "sunday"
       time: "02:00"
       timezone: "UTC"
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
