@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { PwaInstallProvider } from "@/components/PwaInstallProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
@@ -73,6 +74,7 @@ export default function RootLayout({
             <ServiceWorkerRegistration />
           </PwaInstallProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
