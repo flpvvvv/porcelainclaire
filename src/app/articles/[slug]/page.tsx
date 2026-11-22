@@ -6,6 +6,7 @@ import sanitizeHtml from "sanitize-html";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PwaInstallCallout } from "@/components/PwaInstallCallout";
+import { ReadingBeacon } from "@/components/ReadingBeacon";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { WeChatButton } from "@/components/WeChatButton";
 import {
@@ -324,6 +325,7 @@ export default async function ArticlePage({
             </div>
           </div>
         </article>
+        <ReadingBeacon slug={article.slug} />
       </main>
       <Footer />
     </>

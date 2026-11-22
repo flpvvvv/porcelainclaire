@@ -36,7 +36,7 @@ export default function PrivacyPage() {
             隐私政策
           </h1>
           <p className="mt-4 text-sm text-foreground-secondary">
-            最后更新：2026年4月17日
+            最后更新：2026年11月22日
           </p>
 
           <div className="editorial-card mt-10 space-y-8 rounded-[1.8rem] p-6 sm:p-8">
@@ -54,10 +54,16 @@ export default function PrivacyPage() {
                 数据收集
               </h2>
               <p>
-                本站不主动收集用户个人信息。您阅读文章时无需登录或注册，也不需要提供任何身份信息。
+                本站不要求您登录或注册，也不需要提供任何身份信息。文章内容与图片存储于第三方服务（见下文）。
               </p>
               <p>
-                文章内容与图片存储于第三方服务（见下文），但我们不会追踪您的阅读行为或记录访问日志用于分析目的。
+                为了区分真实读者与自动化访问，本站使用无 Cookie
+                的匿名阅读统计：文章页在满足一定阅读时长和滚动深度后，记录文章标识、停留时长、滚动比例、浏览器
+                User-Agent、来源页、国家/地区，以及加盐哈希后的 IP 地址。IP
+                原文不会保存。本站还设有一个对普通读者隐藏的爬虫陷阱链接，用于记录自动化访问。
+              </p>
+              <p>
+                这些数据仅用于了解内容表现和识别爬虫，不用于广告、用户画像或跨站追踪。
               </p>
             </section>
 
@@ -70,6 +76,9 @@ export default function PrivacyPage() {
                 <strong className="text-foreground">主题偏好</strong>
                 （深色或浅色模式）。该 Cookie
                 仅用于改善阅读体验，不涉及任何追踪、广告或第三方数据共享。
+              </p>
+              <p>
+                为避免重复计数，阅读统计会在浏览器本地存储中记录“当天是否已上报”，该记录不包含身份信息。您可以在浏览器中清除本地存储。
               </p>
               <p>
                 您可以在浏览器中清除或禁用
@@ -85,11 +94,11 @@ export default function PrivacyPage() {
               <ul className="mt-3 space-y-2 pl-4">
                 <li>
                   <strong className="text-foreground">Supabase</strong>
-                  ：用于存储文章内容与图片素材。
+                  ：用于存储文章内容、图片素材与匿名阅读统计。
                 </li>
                 <li>
                   <strong className="text-foreground">Vercel</strong>
-                  ：用于网站托管与部署。
+                  ：用于网站托管、部署与匿名访问统计。
                 </li>
               </ul>
               <p className="mt-3">

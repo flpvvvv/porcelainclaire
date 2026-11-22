@@ -44,6 +44,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# supabase cli
+supabase/.temp/
+
 # python
 sync/.venv/
 __pycache__/

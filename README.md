@@ -61,8 +61,18 @@ uv run sync backfill-tags --dry-run --limit 5 --order random --seed 42  # 随机
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase 项目 URL                                                            |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 匿名密钥                                                            |
 | `REVALIDATION_SECRET`           | 服务端 `POST /api/revalidate` 密钥（需与同步脚本使用的一致；勿暴露到浏览器） |
+| `SUPABASE_URL`                  | 服务端 Supabase 项目 URL（可选，默认复用 `NEXT_PUBLIC_SUPABASE_URL`）        |
+| `SUPABASE_SERVICE_KEY`          | 服务端 Supabase service role key（仅服务端使用，勿暴露到浏览器）             |
+| `ANALYTICS_SALT`                | 可选；IP 加盐哈希密钥；未设置时回退到 `REVALIDATION_SECRET`                  |
 
 模板见根目录 [`.env.local.example`](./.env.local.example)。
+
+### 访问统计（Hobby）
+
+- `/bot-trap`：根布局中的隐藏链接。爬虫访问时写入 `bot_trap_hits`。
+- `/api/read`：文章页阅读 beacon。页面可见 ≥10 秒且滚动 ≥25% 后，每篇文章每天写入一次 `reading_events`。
+- 两张表启用 RLS，且只授予 `service_role`；迁移见 `supabase/migrations/006_traffic_signals.sql`。
+- 写入内容包括加盐哈希后的 IP、User-Agent、来源页、国家/地区；不保存原始 IP。
 
 **ISR 重新验证**：同步脚本在设置了 `REVALIDATION_SECRET` 时会 `POST` 到 `{SITE_URL}/api/revalidate`。请求体为 JSON：`{"secret":"<REVALIDATION_SECRET>","slug":"<文章 slug 或省略>"}`（`slug` 为空时只刷新首页缓存）。也可使用请求头 `Authorization: Bearer <REVALIDATION_SECRET>`，或查询参数 `?secret=`（不推荐写入日志）。可选字段 `path` 可显式指定以 `/` 开头的路径。
 
@@ -78,8 +88,8 @@ uv run sync backfill-tags --dry-run --limit 5 --order random --seed 42  # 随机
 
 ## 部署
 
-1. 在 [Supabase](https://supabase.com) 创建项目，并在 SQL Editor 或 CLI 中按顺序应用 `supabase/migrations/` 下的迁移。
-2. 在 Vercel 导入此仓库，配置上表中的前端环境变量。
+1. 在 [Supabase](https://supabase.com) 创建项目，并在 SQL Editor 或 CLI 中按顺序应用 `supabase/migrations/` 下的全部迁移（含 `006_traffic_signals.sql`）。
+2. 在 Vercel 导入此仓库，配置上表中的环境变量（`SUPABASE_SERVICE_KEY` 等仅服务端使用）。
 3. 域名 DNS 按 **Vercel 控制台显示的记录** 配置（不要死记 IP，以 Vercel 为准）。
 4. 若使用 GitHub Actions 等方式跑同步，在对应环境中配置 `SUPABASE_URL`、`SUPABASE_SERVICE_KEY`、`GEMINI_API_KEY`（自动标签）等密钥。
 

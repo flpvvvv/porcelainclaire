@@ -1,5 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
+import { HoneypotLink } from "@/components/HoneypotLink";
 import { PwaInstallProvider } from "@/components/PwaInstallProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -74,6 +75,7 @@ export default function RootLayout({
             <ServiceWorkerRegistration />
           </PwaInstallProvider>
         </ThemeProvider>
+        <HoneypotLink />
         <Analytics />
       </body>
     </html>
